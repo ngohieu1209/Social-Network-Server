@@ -1,3 +1,4 @@
+import { ActivateEmailDto } from './dto/activateEmail.dto';
 import { httpErrors } from './../../shares/exceptions/index';
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
@@ -32,6 +33,31 @@ export class AuthService {
     const activationToken = this.createActivationToken(newUser);
     console.log(activationToken);
     return { msg: 'Register Success! Please activate your email to start.' };
+  }
+
+  async activateEmail(
+    activateEmailDto: ActivateEmailDto,
+  ): Promise<{ msg: string }> {
+    const { activationToken } = activateEmailDto;
+    const userActivation: ActivationTokenDto = this.jwtService.verify(
+      activationToken,
+      {
+        secret: this.configService.get('ACTIVATION_TOKEN_SECRET'),
+      },
+    );
+    const { email, password } = userActivation;
+
+    const checkEmail = await this.usersService.checkUserEmailExisted(email);
+    if (checkEmail)
+      throw new HttpException(
+        httpErrors.ACCOUNT_EXISTED,
+        HttpStatus.BAD_REQUEST,
+      );
+
+    const newUser = { email, password };
+    await this.usersService.createUser(newUser);
+
+    return { msg: 'Account has been activated!' };
   }
 
   createActivationToken = (payload: ActivationTokenDto) => {

@@ -47,13 +47,13 @@ export class usersTable1672420192742 implements MigrationInterface {
           },
           {
             name: 'createdAt',
-            type: 'timestamp',
-            default: 'now()',
+            type: 'datetime',
+            default: 'CURRENT_TIMESTAMP',
           },
           {
             name: 'updatedAt',
-            type: 'timestamp',
-            default: 'now()',
+            type: 'datetime',
+            default: 'CURRENT_TIMESTAMP',
           },
         ],
         foreignKeys: [

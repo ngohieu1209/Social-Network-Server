@@ -21,19 +21,19 @@ export class CreateUserDto {
   @IsNotEmpty()
   password: string;
 
-  @IsString()
-  @IsOptional()
-  firstName: string;
+  // @IsString()
+  // @IsOptional()
+  // firstName: string;
 
-  @IsString()
-  @IsOptional()
-  lastName: string;
+  // @IsString()
+  // @IsOptional()
+  // lastName: string;
 
-  @IsString()
-  @IsOptional()
-  avatar: string;
+  // @IsString()
+  // @IsOptional()
+  // avatar: string;
 
-  @IsString()
-  @IsOptional()
-  socialLinks: string;
+  // @IsString()
+  // @IsOptional()
+  // socialLinks: string;
 }

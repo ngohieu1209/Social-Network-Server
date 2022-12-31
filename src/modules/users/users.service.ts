@@ -14,8 +14,8 @@ export class UsersService {
 
   async createUser(createUserDto: CreateUserDto): Promise<UsersEntity> {
     const { email, password } = createUserDto;
-    const user: UsersEntity = await this.findUserByEmail(email);
-    if (user) {
+    const checkUser = await this.checkUserEmailExisted(email);
+    if (checkUser) {
       throw new HttpException(
         httpErrors.ACCOUNT_EXISTED,
         HttpStatus.BAD_REQUEST,
