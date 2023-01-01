@@ -1,3 +1,4 @@
+import { ResetPasswordDto } from './dto/resetPassword.dto';
 import { ActivateEmailDto } from './dto/activateEmail.dto';
 import { httpErrors } from './../../shares/exceptions/index';
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
@@ -9,6 +10,7 @@ import { CreateUserDto } from '../users/dto/createUser.dto';
 import { RefreshTokenDto } from './dto/refreshToken.dto';
 import * as bcrypt from 'bcrypt';
 import { UsersService } from '../users/users.service';
+import { SignInDto } from './dto/signin.dto';
 
 @Injectable()
 export class AuthService {
@@ -39,25 +41,98 @@ export class AuthService {
     activateEmailDto: ActivateEmailDto,
   ): Promise<{ msg: string }> {
     const { activationToken } = activateEmailDto;
-    const userActivation: ActivationTokenDto = this.jwtService.verify(
-      activationToken,
-      {
-        secret: this.configService.get('ACTIVATION_TOKEN_SECRET'),
-      },
-    );
-    const { email, password } = userActivation;
+    try {
+      const userActivation: ActivationTokenDto =
+        await this.jwtService.verifyAsync(activationToken, {
+          secret: this.configService.get('ACTIVATION_TOKEN_SECRET'),
+        });
+      const { email, password } = userActivation;
 
-    const checkEmail = await this.usersService.checkUserEmailExisted(email);
-    if (checkEmail)
+      const checkEmail = await this.usersService.checkUserEmailExisted(email);
+      if (checkEmail)
+        throw new HttpException(
+          httpErrors.ACCOUNT_EXISTED,
+          HttpStatus.BAD_REQUEST,
+        );
+
+      const newUser = { email, password };
+      await this.usersService.createUser(newUser);
+      return { msg: 'Account has been activated!' };
+    } catch (error) {
       throw new HttpException(
-        httpErrors.ACCOUNT_EXISTED,
+        httpErrors.ACTIVATION_TOKEN_EXPIRED,
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+  }
+
+  async signIn(signInDto: SignInDto): Promise<{ refreshToken: string }> {
+    const { email, password } = signInDto;
+    const user = await this.usersService.findUserByEmail(email);
+    if (!user)
+      throw new HttpException(
+        httpErrors.ACCOUNT_INCORRECT,
         HttpStatus.BAD_REQUEST,
       );
 
-    const newUser = { email, password };
-    await this.usersService.createUser(newUser);
+    const isMatch = await bcrypt.compare(password, user.password);
 
-    return { msg: 'Account has been activated!' };
+    if (!isMatch)
+      throw new HttpException(
+        httpErrors.ACCOUNT_INCORRECT,
+        HttpStatus.BAD_REQUEST,
+      );
+
+    const refreshToken = this.createRefreshToken({ id: user.id });
+    return { refreshToken };
+  }
+
+  async getAccessToken(refreshToken: string): Promise<{ accessToken: string }> {
+    try {
+      const userRefresh: RefreshTokenDto = await this.jwtService.verifyAsync(
+        refreshToken,
+        {
+          secret: this.configService.get('REFRESH_TOKEN_SECRET'),
+        },
+      );
+      const { id } = userRefresh;
+      const accessToken = this.createAccessToken({ id });
+      return { accessToken };
+    } catch (error) {
+      throw new HttpException(
+        httpErrors.REFRESH_TOKEN_EXPIRED,
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+  }
+
+  async forgotPassword(email: string): Promise<{ msg: string }> {
+    const user = await this.usersService.findUserByEmail(email);
+    if (!user)
+      throw new HttpException(
+        httpErrors.USER_EMAIL_NOT_EXISTED,
+        HttpStatus.BAD_REQUEST,
+      );
+    const accessToken = this.createAccessToken({ id: user.id });
+    // send Mail
+
+    return { msg: 'Please check your email to reset password!' };
+  }
+
+  async resetPassword(
+    resetPasswordDto: ResetPasswordDto,
+  ): Promise<{ msg: string }> {
+    const { id, password } = resetPasswordDto;
+    const passwordHash = await bcrypt.hash(password, 12);
+    try {
+      await this.usersService.findOneByIdAndUpdatePassword(id, passwordHash);
+      return { msg: 'Password successfully changed!' };
+    } catch (error) {
+      throw new HttpException(
+        httpErrors.CHANGE_PASSWORD_FAILED,
+        HttpStatus.BAD_REQUEST,
+      );
+    }
   }
 
   createActivationToken = (payload: ActivationTokenDto) => {

@@ -8,7 +8,7 @@ import { DatabaseCommonModule } from './models/database-common';
 
 @Module({
   imports: [
-    ConfigModule.forRoot({ isGlobal: true }),
+    ConfigModule.forRoot({ isGlobal: true, envFilePath: '.env' }),
     TypeOrmModule.forRoot({
       ...config,
       entities: [__dirname + '/../models/entities/**/*{.ts, .js}'],

@@ -36,27 +36,15 @@ export class UsersService {
         id: id,
       },
     });
-    if (!user) {
-      throw new HttpException(
-        httpErrors.ACCOUNT_NOT_FOUND,
-        HttpStatus.BAD_REQUEST,
-      );
-    }
     return user;
   }
 
   async findUserByEmail(email: string): Promise<UsersEntity> {
-    const user: UsersEntity = await this.userRepository.findOne({
-      where: {
-        email: email,
-      },
-    });
-    if (!user) {
-      throw new HttpException(
-        httpErrors.ACCOUNT_NOT_FOUND,
-        HttpStatus.BAD_REQUEST,
-      );
-    }
+    const user: UsersEntity = await this.userRepository
+      .createQueryBuilder('user')
+      .where('user.email = :email', { email: email })
+      .addSelect('user.password')
+      .getOne();
     return user;
   }
 
@@ -68,5 +56,16 @@ export class UsersService {
       select: ['id'],
     });
     return !!user;
+  }
+
+  async findOneByIdAndUpdatePassword(
+    id: string,
+    password: string,
+  ): Promise<boolean> {
+    const result = await this.userRepository.update(
+      { id: id },
+      { password: password },
+    );
+    return result.affected === 1;
   }
 }
