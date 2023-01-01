@@ -21,7 +21,7 @@ export class UsersEntity {
   @Expose()
   email: string;
 
-  @Column()
+  @Column({ select: false })
   @Expose()
   password: string;
 

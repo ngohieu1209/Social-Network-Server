@@ -8,8 +8,8 @@ export const httpErrors = {
     message: 'Account already existed.',
     code: 'USER_00001',
   },
-  ACCOUNT_HASH_NOT_MATCH: {
-    message: 'Account adress and hash message are not matched.',
+  ACCOUNT_INCORRECT: {
+    message: 'email or password incorrect.',
     code: 'USER_00002',
   },
   UNAUTHORIZED: {
@@ -23,6 +23,10 @@ export const httpErrors = {
   VERIFY_SIGNATURE_FAIL: {
     message: 'System has been failed to verify signture.',
     code: 'USER_00005',
+  },
+  ACTIVATION_TOKEN_EXPIRED: {
+    message: 'Activation tokens is expired.',
+    code: 'USER_00006',
   },
   REFRESH_TOKEN_EXPIRED: {
     message: 'Refresh tokens is expired.',
@@ -40,6 +44,10 @@ export const httpErrors = {
     message: 'Email has been associted with an other account.',
     code: 'USER_00025',
   },
+  USER_EMAIL_NOT_EXISTED: {
+    message: 'This email does not exist.',
+    code: 'USER_00029',
+  },
   USER_EMAIL_VERIFY_FAIL: {
     message: 'Failed to verify this email.',
     code: 'USER_00026',
@@ -51,6 +59,10 @@ export const httpErrors = {
   EMAIL_WAIT_TIME: {
     message: 'Too much request',
     code: 'USER_00028',
+  },
+  CHANGE_PASSWORD_FAILED: {
+    message: 'Change password fail.',
+    code: 'USER_00030',
   },
 
   // latest block
