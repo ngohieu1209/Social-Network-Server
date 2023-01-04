@@ -4,11 +4,12 @@ import { httpErrors } from './../../shares/exceptions/index';
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
+import * as bcrypt from 'bcrypt';
+import * as nodemailer from 'nodemailer';
 import { AccessTokenDto } from './dto/accessToken.dto';
 import { ActivationTokenDto } from './dto/ActivationToken.dto';
 import { CreateUserDto } from '../users/dto/createUser.dto';
 import { RefreshTokenDto } from './dto/refreshToken.dto';
-import * as bcrypt from 'bcrypt';
 import { UsersService } from '../users/users.service';
 import { SignInDto } from './dto/signin.dto';
 
@@ -33,7 +34,13 @@ export class AuthService {
     const passwordHash = await bcrypt.hash(password, 12);
     const newUser: ActivationTokenDto = { email, password: passwordHash };
     const activationToken = this.createActivationToken(newUser);
-    console.log(activationToken);
+
+    // send mail
+    const url = `${this.configService.get(
+      'CLIENT_URL',
+    )}/user/activate/${activationToken}`;
+    this.sendMail(email, url, 'Verify your email address');
+
     return { msg: 'Register Success! Please activate your email to start.' };
   }
 
@@ -114,7 +121,12 @@ export class AuthService {
         HttpStatus.BAD_REQUEST,
       );
     const accessToken = this.createAccessToken({ id: user.id });
-    // send Mail
+
+    // send mail
+    const url = `${this.configService.get(
+      'CLIENT_URL',
+    )}/user/resetPassword/${accessToken}`;
+    this.sendMail(email, url, 'Reset your password');
 
     return { msg: 'Please check your email to reset password!' };
   }
@@ -153,6 +165,49 @@ export class AuthService {
     return this.jwtService.sign(payload, {
       secret: this.configService.get('REFRESH_TOKEN_SECRET'),
       expiresIn: this.configService.get('REFRESH_TOKEN_EXPIRATION_TIME'),
+    });
+  };
+
+  sendMail = (to: string, url: string, txt: string) => {
+    const smtpTransport = nodemailer.createTransport({
+      service: 'yandex',
+      port: 465,
+      auth: {
+        user: this.configService.get('SENDER_EMAIL'),
+        pass: this.configService.get('SENDER_PASSWORD_SMTP'),
+      },
+    });
+
+    const mailOptions = {
+      from: `"NTHMiLo 😎" < ${this.configService.get('SENDER_EMAIL')} >`,
+      to: to,
+      subject: '❄️ Winter Social Network ❄️',
+      html: `
+      <div style="max-width: 700px; margin:auto; border: 10px solid #ddd; padding: 20px 20px; font-size: 110%; font-family: cursive">
+            <div style="text-align: center">
+            </div>
+            <h2 style="text-align: center; text-transform: uppercase;color: #1d9e1b;">✨ WELCOME ✨</h2>
+            <h2 style="text-align: center; text-transform: uppercase;color: #174ea6;">❄️ Winter Social Network ❄️</h2>
+            <p>Congratulations! You're almost set to start using Winter Social Network.
+                Just click the button below to validate your email address.
+            </p>
+            
+            <a
+              href=${url} 
+              style="background: crimson; text-decoration: none; color: white; padding: 10px 20px; margin: 10px 0; display: inline-block; border-radius: 10px; font-weight: 600">
+                ${txt}
+            </a>
+        
+            <p>If the button doesn't work for any reason, Please Try Again 😥</p>
+            <h1 style="text-align: center; margin-top: 35px">Thank you ! </h1>
+            <h3 style="text-align: right; font-style: italic">NTHMiLo</h3>
+            </div>
+    `,
+    };
+
+    smtpTransport.sendMail(mailOptions, (err, information) => {
+      if (err) return err;
+      return information;
     });
   };
 }
