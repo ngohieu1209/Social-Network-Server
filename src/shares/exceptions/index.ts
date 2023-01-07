@@ -64,6 +64,10 @@ export const httpErrors = {
     message: 'Change password fail.',
     code: 'USER_00030',
   },
+  OLD_PASSWORD_INCORRECT: {
+    message: 'Old password incorrect',
+    code: 'USER_00031',
+  },
 
   // latest block
   LATEST_BLOCK_EXISTED: {

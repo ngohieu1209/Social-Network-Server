@@ -3,13 +3,11 @@ import {
   Column,
   CreateDateColumn,
   Entity,
-  JoinColumn,
-  OneToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { SocialLinksEntity } from './socialLinks.entity';
-
+import { PostEntity } from './post.entity';
 @Entity({
   name: 'users',
 })
@@ -22,7 +20,6 @@ export class UsersEntity {
   email: string;
 
   @Column({ select: false })
-  @Expose()
   password: string;
 
   @Column()
@@ -37,6 +34,14 @@ export class UsersEntity {
   @Expose()
   avatar: string;
 
+  @Column()
+  @Expose()
+  followers: number;
+
+  @Column()
+  @Expose()
+  following: number;
+
   @CreateDateColumn()
   @Expose()
   createdAt: Date;
@@ -45,10 +50,6 @@ export class UsersEntity {
   @Expose()
   updatedAt: Date;
 
-  @OneToOne(() => SocialLinksEntity, {
-    cascade: true,
-    eager: true,
-  })
-  @JoinColumn({ name: 'socialLinksId' })
-  socialLinksId: SocialLinksEntity;
+  @OneToMany(() => PostEntity, (post) => post.userId)
+  posts: PostEntity[];
 }

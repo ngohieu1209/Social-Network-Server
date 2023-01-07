@@ -1,13 +1,5 @@
 import { UsersEntity } from './../../models/entities/users.entity';
-import {
-  Body,
-  Controller,
-  Get,
-  Post,
-  Req,
-  Res,
-  UseGuards,
-} from '@nestjs/common';
+import { Body, Controller, Post, Req, Res, UseGuards } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { GetUser } from 'src/shares/decorators/get-user.decorator';
 import { CreateUserDto } from '../users/dto/createUser.dto';

@@ -29,6 +29,21 @@ export class socialLinksTable1672418775879 implements MigrationInterface {
             type: 'varchar',
             isNullable: true,
           },
+          {
+            name: 'userId',
+            type: 'varchar',
+            isNullable: true,
+          },
+        ],
+        foreignKeys: [
+          {
+            name: 'userId',
+            columnNames: ['userId'],
+            referencedTableName: 'users',
+            referencedColumnNames: ['id'],
+            onDelete: 'CASCADE',
+            onUpdate: 'CASCADE',
+          },
         ],
       }),
       true,
@@ -36,6 +51,11 @@ export class socialLinksTable1672418775879 implements MigrationInterface {
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
+    const table = await queryRunner.getTable('socialLinks');
+    const foreignKey = table.foreignKeys.find(
+      (fk) => fk.columnNames.indexOf('userId') !== -1,
+    );
+    await queryRunner.dropForeignKey('socialLinks', foreignKey);
     await queryRunner.dropTable('socialLinks');
   }
 }
