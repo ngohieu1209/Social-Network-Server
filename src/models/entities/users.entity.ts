@@ -50,6 +50,9 @@ export class UsersEntity {
   @Expose()
   updatedAt: Date;
 
-  @OneToMany(() => PostEntity, (post) => post.userId)
+  @OneToMany(() => PostEntity, (post) => post.userId, {
+    cascade: true,
+    eager: true,
+  })
   posts: PostEntity[];
 }

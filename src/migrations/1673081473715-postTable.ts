@@ -1,10 +1,10 @@
 import { MigrationInterface, QueryRunner, Table } from 'typeorm';
 
-export class socialLinksTable1672418775879 implements MigrationInterface {
+export class postTable1673081473715 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.createTable(
       new Table({
-        name: 'socialLinks',
+        name: 'post',
         columns: [
           {
             name: 'id',
@@ -15,29 +15,59 @@ export class socialLinksTable1672418775879 implements MigrationInterface {
             isNullable: false,
           },
           {
-            name: 'linkFacebook',
+            name: 'postMode',
+            type: 'enum',
+            enum: ['public', 'friend', 'private'],
+            default: "'public'",
+          },
+          {
+            name: 'content',
             type: 'varchar',
             isNullable: true,
           },
           {
-            name: 'linkInstagram',
+            name: 'hashtag',
             type: 'varchar',
             isNullable: true,
           },
           {
-            name: 'linkGithub',
+            name: 'image',
             type: 'varchar',
             isNullable: true,
+          },
+          {
+            name: 'video',
+            type: 'varchar',
+            isNullable: true,
+          },
+          {
+            name: 'likesCount',
+            type: 'int',
+            default: 0,
+          },
+          {
+            name: 'commentsCount',
+            type: 'int',
+            default: 0,
+          },
+          {
+            name: 'createdAt',
+            type: 'datetime',
+            default: 'CURRENT_TIMESTAMP',
+          },
+          {
+            name: 'updatedAt',
+            type: 'datetime',
+            default: 'CURRENT_TIMESTAMP',
           },
           {
             name: 'userId',
             type: 'varchar',
-            isNullable: true,
+            isNullable: false,
           },
         ],
         foreignKeys: [
           {
-            name: 'userId',
             columnNames: ['userId'],
             referencedTableName: 'users',
             referencedColumnNames: ['id'],
@@ -51,12 +81,12 @@ export class socialLinksTable1672418775879 implements MigrationInterface {
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
-    const table = await queryRunner.getTable('socialLinks');
+    const table = await queryRunner.getTable('post');
     const foreignKey = table.foreignKeys.find(
       (fk) => fk.columnNames.indexOf('userId') !== -1,
     );
-    await queryRunner.dropForeignKey('socialLinks', foreignKey);
-    await queryRunner.dropColumn('socialLinks', 'userId');
-    await queryRunner.dropTable('socialLinks');
+    await queryRunner.dropForeignKey('post', foreignKey);
+    await queryRunner.dropColumn('post', 'userId');
+    await queryRunner.dropTable('post');
   }
 }
