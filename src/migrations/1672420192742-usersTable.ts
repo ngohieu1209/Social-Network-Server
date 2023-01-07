@@ -41,9 +41,14 @@ export class usersTable1672420192742 implements MigrationInterface {
             isNullable: true,
           },
           {
-            name: 'socialLinksId',
-            type: 'varchar',
-            isNullable: true,
+            name: 'followers',
+            type: 'int',
+            default: 0,
+          },
+          {
+            name: 'following',
+            type: 'int',
+            default: 0,
           },
           {
             name: 'createdAt',
@@ -54,16 +59,6 @@ export class usersTable1672420192742 implements MigrationInterface {
             name: 'updatedAt',
             type: 'datetime',
             default: 'CURRENT_TIMESTAMP',
-          },
-        ],
-        foreignKeys: [
-          {
-            name: 'socialLinksId',
-            columnNames: ['socialLinksId'],
-            referencedTableName: 'socialLinks',
-            referencedColumnNames: ['id'],
-            onDelete: 'CASCADE',
-            onUpdate: 'CASCADE',
           },
         ],
       }),

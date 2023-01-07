@@ -1,10 +1,9 @@
-import { IsEmail, IsNotEmpty, IsString, MinLength } from 'class-validator';
+import { IsNotEmpty, IsString, MinLength } from 'class-validator';
 
-export class CreateUserDto {
+export class ChangePasswordDto {
   @IsString()
-  @IsEmail()
   @IsNotEmpty()
-  email: string;
+  oldPassword: string;
 
   @IsString()
   @MinLength(8)
@@ -13,5 +12,5 @@ export class CreateUserDto {
   //     'Your password must be at least 8 characters including a lowercase letter, an uppercase letter, a number and a special character',
   // })
   @IsNotEmpty()
-  password: string;
+  newPassword: string;
 }
