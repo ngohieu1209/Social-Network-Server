@@ -69,24 +69,28 @@ export const httpErrors = {
     code: 'USER_00031',
   },
 
-  // latest block
-  LATEST_BLOCK_EXISTED: {
-    message: 'Latest block exist.',
-    code: 'LATEST_BLOCK_00001',
+  // image
+  UPLOAD_IMAGE_FAILED: {
+    message: 'Upload image failed',
+    code: 'UPLOAD_00001',
+  },
+  WRONG_FILE_FORMAT: {
+    message: 'Wrong file format',
+    code: 'UPLOAD_00002',
   },
   POSITION_NOT_FOUND: {
     message: 'Position not found.',
     code: 'POSITION_00002',
   },
 
-  // order error
-  ORDER_NOT_FOUND: {
-    message: 'Order not found.',
-    code: 'ORDER_00001',
+  // post error
+  POST_NOT_FOUND: {
+    message: 'Post not found.',
+    code: 'POST_00001',
   },
-  ORDER_CANCEL_DENIED: {
-    message: 'You do not have permission to cancel this order.',
-    code: 'ORDER_00002',
+  POST_EDIT_DENIED: {
+    message: 'You do not have permission to edit this post',
+    code: 'POST_00002',
   },
   ORDER_ALREADY_CANCELED: {
     message: 'This order have been already canceled and waiting to confirm.',

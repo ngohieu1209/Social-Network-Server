@@ -4,6 +4,7 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
@@ -22,7 +23,7 @@ export class PostEntity {
     default: PostMode.PUBLIC,
   })
   @Expose()
-  postMode: PostMode;
+  postMode: string;
 
   @Column()
   @Expose()
@@ -56,6 +57,10 @@ export class PostEntity {
   @Expose()
   updatedAt: Date;
 
-  @ManyToOne(() => UsersEntity, (user) => user.posts)
+  @ManyToOne(() => UsersEntity, {
+    cascade: true,
+    eager: true,
+  })
+  @JoinColumn({ name: 'userId' })
   userId: UsersEntity;
 }
