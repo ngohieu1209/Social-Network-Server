@@ -36,7 +36,7 @@ export class AuthController {
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     });
 
-    res.json({ msg: 'Login Success!' });
+    res.status(200).json({ msg: 'Login Success!' });
   }
 
   @Post('/refreshToken')
