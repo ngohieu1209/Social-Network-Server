@@ -9,7 +9,6 @@ import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreatePostDto } from './dto/createPost.dto';
 import { UploadService } from '../upload/upload.service';
-import { UploadApiResponse } from 'cloudinary';
 
 @Injectable()
 export class PostService {
@@ -40,19 +39,6 @@ export class PostService {
       userId: user,
     });
     return newPost;
-  }
-
-  async uploadImagePost(file: Express.Multer.File): Promise<{ url: string }> {
-    try {
-      const data: Partial<UploadApiResponse> =
-        await this.uploadService.uploadImage(file);
-      return { url: data.secure_url };
-    } catch (error) {
-      throw new HttpException(
-        httpErrors.UPLOAD_IMAGE_FAILED,
-        HttpStatus.BAD_REQUEST,
-      );
-    }
   }
 
   async getAllPost() {

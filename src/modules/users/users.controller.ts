@@ -6,6 +6,8 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { UsersService } from './users.service';
 import { UpdateUserDto } from './dto/updateUser.dto';
 import { ChangePasswordDto } from './dto/changePassword.dto';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { httpErrors } from 'src/shares/exceptions';
 
 @UseGuards(JwtAuthGuard)
 @Controller('user')
