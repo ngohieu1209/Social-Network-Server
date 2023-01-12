@@ -41,6 +41,16 @@ export class usersTable1672418775879 implements MigrationInterface {
             isNullable: true,
           },
           {
+            name: 'location',
+            type: 'varchar',
+            isNullable: true,
+          },
+          {
+            name: 'bio',
+            type: 'varchar',
+            isNullable: true,
+          },
+          {
             name: 'followers',
             type: 'int',
             default: 0,

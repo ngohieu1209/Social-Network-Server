@@ -7,46 +7,27 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 @Entity({
-  name: 'users',
+  name: 'upload',
 })
-export class UsersEntity {
+export class UploadEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
   @Column()
   @Expose()
-  email: string;
-
-  @Column({ select: false })
-  password: string;
+  name: string;
 
   @Column()
   @Expose()
-  firstName: string;
+  file: string;
 
   @Column()
   @Expose()
-  lastName: string;
+  fileType: string;
 
   @Column()
   @Expose()
-  avatar: string;
-
-  @Column()
-  @Expose()
-  location: string;
-
-  @Column()
-  @Expose()
-  bio: string;
-
-  @Column()
-  @Expose()
-  followers: number;
-
-  @Column()
-  @Expose()
-  following: number;
+  url: string;
 
   @CreateDateColumn()
   @Expose()
@@ -55,4 +36,7 @@ export class UsersEntity {
   @UpdateDateColumn()
   @Expose()
   updatedAt: Date;
+
+  @Column()
+  postId: string;
 }

@@ -46,13 +46,13 @@ export class AuthController {
   }
 
   @Post('/forgot')
-  async forgotPassword(@Body('email') email: string): Promise<{ msg: string }> {
+  forgotPassword(@Body('email') email: string): Promise<{ msg: string }> {
     return this.authService.forgotPassword(email);
   }
 
   @UseGuards(JwtAuthGuard)
   @Post('/resetPassword')
-  async resetPassword(
+  resetPassword(
     @Body('password') password: string,
     @GetUser() user: UsersEntity,
   ): Promise<{ msg: string }> {

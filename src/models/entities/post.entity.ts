@@ -31,18 +31,6 @@ export class PostEntity {
 
   @Column()
   @Expose()
-  hashtag: string;
-
-  @Column()
-  @Expose()
-  image: string;
-
-  @Column()
-  @Expose()
-  video: string;
-
-  @Column()
-  @Expose()
   likesCount: number;
 
   @Column()

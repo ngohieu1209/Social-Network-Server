@@ -1,6 +1,6 @@
 import { MigrationInterface, QueryRunner, Table } from 'typeorm';
 
-export class postTable1673081473715 implements MigrationInterface {
+export class postTable1673320638543 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.createTable(
       new Table({
@@ -22,21 +22,6 @@ export class postTable1673081473715 implements MigrationInterface {
           },
           {
             name: 'content',
-            type: 'varchar',
-            isNullable: true,
-          },
-          {
-            name: 'hashtag',
-            type: 'varchar',
-            isNullable: true,
-          },
-          {
-            name: 'image',
-            type: 'varchar',
-            isNullable: true,
-          },
-          {
-            name: 'video',
             type: 'varchar',
             isNullable: true,
           },

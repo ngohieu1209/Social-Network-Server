@@ -1,3 +1,4 @@
+import { UpdateSocialLinksDto } from './dto/updateSocialLinks.dto';
 import { SocialLinksEntity } from './../../models/entities/socialLinks.entity';
 import { CreateUserDto } from './dto/createUser.dto';
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
@@ -49,49 +50,49 @@ export class UsersService {
     return user;
   }
 
-  async getSocialLinks(userId: string): Promise<SocialLinksEntity> {
+  async getSocialLinks(userId: string): Promise<any> {
     const socialLink = await this.socialLinksRepository
       .createQueryBuilder('socialLink')
       .where('socialLink.userId = :id', { id: userId })
-      .innerJoinAndSelect('socialLink.userId', 'user')
-      .select(['socialLink', 'user.id'])
+      .innerJoinAndMapOne('socialLink.userId', UsersEntity, 'user')
+      .select(['socialLink', 'user'])
       .getOne();
     return socialLink;
   }
 
-  async updateUser(
-    id: string,
-    updateUserDto: UpdateUserDto,
+  async updateSocialLinks(
+    userId: string,
+    updateSocialLinksDto: UpdateSocialLinksDto,
   ): Promise<{ msg: string }> {
-    const {
-      firstName,
-      lastName,
-      avatar,
-      linkFacebook,
-      linkInstagram,
-      linkGithub,
-    } = updateUserDto;
-
-    const socialLink = await this.getSocialLinks(id);
-
-    const user = await this.findUserById(id);
-
+    const socialLink = await this.getSocialLinks(userId);
     if (!socialLink) {
       const newSocialLink = new SocialLinksEntity();
-      newSocialLink.linkFacebook = linkFacebook;
-      newSocialLink.linkInstagram = linkInstagram;
-      newSocialLink.linkGithub = linkGithub;
-      newSocialLink.userId = user;
+      newSocialLink.linkFacebook = updateSocialLinksDto.linkFacebook;
+      newSocialLink.linkInstagram = updateSocialLinksDto.linkInstagram;
+      newSocialLink.linkGithub = updateSocialLinksDto.linkGithub;
+      newSocialLink.userId = userId;
       await this.socialLinksRepository.save(newSocialLink);
     } else {
-      socialLink.linkFacebook = linkFacebook;
-      socialLink.linkInstagram = linkInstagram;
-      socialLink.linkGithub = linkGithub;
+      socialLink.linkFacebook = updateSocialLinksDto.linkFacebook;
+      socialLink.linkInstagram = updateSocialLinksDto.linkInstagram;
+      socialLink.linkGithub = updateSocialLinksDto.linkGithub;
       await this.socialLinksRepository.save(socialLink);
     }
-    user.firstName = firstName;
-    user.lastName = lastName;
-    user.avatar = avatar;
+    return { msg: 'Update Success !' };
+  }
+
+  async updateUser(
+    userId: string,
+    updateUserDto: UpdateUserDto,
+  ): Promise<{ msg: string }> {
+    const user = await this.findUserById(userId);
+
+    user.firstName = updateUserDto.firstName;
+    user.lastName = updateUserDto.lastName;
+    user.avatar = updateUserDto.avatar;
+    user.location = updateUserDto.location;
+    user.bio = updateUserDto.bio;
+
     await this.userRepository.save(user);
 
     return { msg: 'Update Success !' };

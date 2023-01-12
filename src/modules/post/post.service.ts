@@ -8,7 +8,6 @@ import { PostRepository } from './../../models/repositories/post.repository';
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreatePostDto } from './dto/createPost.dto';
-import { UploadService } from '../upload/upload.service';
 
 @Injectable()
 export class PostService {
@@ -19,7 +18,6 @@ export class PostService {
     @InjectRepository(UserRepository)
     private readonly userRepository: UserRepository,
 
-    private readonly uploadService: UploadService,
     private readonly usersService: UsersService,
   ) {}
 
