@@ -6,8 +6,7 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { UsersService } from './users.service';
 import { UpdateUserDto } from './dto/updateUser.dto';
 import { ChangePasswordDto } from './dto/changePassword.dto';
-import { FileInterceptor } from '@nestjs/platform-express';
-import { httpErrors } from 'src/shares/exceptions';
+import { UpdateSocialLinksDto } from './dto/updateSocialLinks.dto';
 
 @UseGuards(JwtAuthGuard)
 @Controller('user')
@@ -25,26 +24,32 @@ export class UsersController {
   }
 
   @Patch('update')
-  async updateUser(
+  updateUser(
     @Body() updateUserDto: UpdateUserDto,
     @GetUser() user: UsersEntity,
   ): Promise<{ msg: string }> {
-    const data = await this.usersService.updateUser(user.id, updateUserDto);
-    return data;
+    return this.usersService.updateUser(user.id, updateUserDto);
+  }
+
+  @Patch('update-social-links')
+  updateSocialLinks(
+    @Body() updateSocialLinksDto: UpdateSocialLinksDto,
+    @GetUser() user: UsersEntity,
+  ): Promise<{ msg: string }> {
+    return this.usersService.updateSocialLinks(user.id, updateSocialLinksDto);
   }
 
   @Patch('change-password')
-  async changePassword(
+  changePassword(
     @Body() changPassword: ChangePasswordDto,
     @GetUser() user: UsersEntity,
   ): Promise<{ msg: string }> {
     const { email } = user;
     const { oldPassword, newPassword } = changPassword;
-    const data = await this.usersService.changePassword({
+    return this.usersService.changePassword({
       email,
       oldPassword,
       newPassword,
     });
-    return data;
   }
 }

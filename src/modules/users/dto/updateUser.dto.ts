@@ -15,13 +15,8 @@ export class UpdateUserDto {
 
   @IsString()
   @IsOptional()
-  linkFacebook: string;
-
+  location: string;
   @IsString()
   @IsOptional()
-  linkInstagram: string;
-
-  @IsString()
-  @IsOptional()
-  linkGithub: string;
+  bio: string;
 }
