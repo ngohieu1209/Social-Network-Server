@@ -1,24 +1,16 @@
-import { UpdateSocialLinksDto } from './dto/updateSocialLinks.dto';
-import { SocialLinksEntity } from './../../models/entities/socialLinks.entity';
-import { CreateUserDto } from './dto/createUser.dto';
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { UsersEntity } from './../../models/entities/users.entity';
-import { UserRepository } from './../../models/repositories/users.repository';
-import { httpErrors } from './../../shares/exceptions/index';
-import { UpdateUserDto } from './dto/updateUser.dto';
-import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
-import { ChangePasswordDto } from './dto/changePassword.dto';
+import { UsersEntity } from './../../models/entities';
+import { UserRepository } from './../../models/repositories';
+import { httpErrors } from './../../shares/exceptions/index';
+import { CreateUserDto, UpdateUserDto, ChangePasswordDto } from './dto';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(UserRepository)
     private readonly userRepository: UserRepository,
-
-    @InjectRepository(SocialLinksEntity)
-    private readonly socialLinksRepository: Repository<SocialLinksEntity>,
   ) {}
 
   async createUser(createUserDto: CreateUserDto): Promise<UsersEntity> {
@@ -31,12 +23,10 @@ export class UsersService {
       );
     }
 
-    const newUser = await this.userRepository.save({
+    return await this.userRepository.save({
       email: email,
       password: password,
     });
-
-    return newUser;
   }
 
   async getUser(id: string): Promise<UsersEntity> {
@@ -50,42 +40,18 @@ export class UsersService {
     return user;
   }
 
-  async getSocialLinks(userId: string): Promise<any> {
-    const socialLink = await this.socialLinksRepository
-      .createQueryBuilder('socialLink')
-      .where('socialLink.userId = :id', { id: userId })
-      .innerJoinAndMapOne('socialLink.userId', UsersEntity, 'user')
-      .select(['socialLink', 'user'])
-      .getOne();
-    return socialLink;
-  }
-
-  async updateSocialLinks(
-    userId: string,
-    updateSocialLinksDto: UpdateSocialLinksDto,
-  ): Promise<{ msg: string }> {
-    const socialLink = await this.getSocialLinks(userId);
-    if (!socialLink) {
-      const newSocialLink = new SocialLinksEntity();
-      newSocialLink.linkFacebook = updateSocialLinksDto.linkFacebook;
-      newSocialLink.linkInstagram = updateSocialLinksDto.linkInstagram;
-      newSocialLink.linkGithub = updateSocialLinksDto.linkGithub;
-      newSocialLink.userId = userId;
-      await this.socialLinksRepository.save(newSocialLink);
-    } else {
-      socialLink.linkFacebook = updateSocialLinksDto.linkFacebook;
-      socialLink.linkInstagram = updateSocialLinksDto.linkInstagram;
-      socialLink.linkGithub = updateSocialLinksDto.linkGithub;
-      await this.socialLinksRepository.save(socialLink);
-    }
-    return { msg: 'Update Success !' };
-  }
-
   async updateUser(
     userId: string,
     updateUserDto: UpdateUserDto,
   ): Promise<{ msg: string }> {
     const user = await this.findUserById(userId);
+
+    if (!user) {
+      throw new HttpException(
+        httpErrors.ACCOUNT_NOT_FOUND,
+        HttpStatus.NOT_FOUND,
+      );
+    }
 
     user.firstName = updateUserDto.firstName;
     user.lastName = updateUserDto.lastName;
@@ -103,7 +69,7 @@ export class UsersService {
     oldPassword,
     newPassword,
   }: T): Promise<{ msg: string }> {
-    const user = await this.findUserByEmail(email);
+    const user = await this.userRepository.findUserByEmail(email);
 
     const isMatch = await bcrypt.compare(oldPassword, user.password);
 
@@ -125,15 +91,6 @@ export class UsersService {
         id: id,
       },
     });
-    return user;
-  }
-
-  async findUserByEmail(email: string): Promise<UsersEntity> {
-    const user: UsersEntity = await this.userRepository
-      .createQueryBuilder('user')
-      .where('user.email = :email', { email: email })
-      .addSelect('user.password')
-      .getOne();
     return user;
   }
 

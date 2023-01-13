@@ -1,13 +1,11 @@
-import { UserRepository } from './../../models/repositories/users.repository';
-import { UpdatePostDto } from './dto/updatePost.dto';
-import { UsersEntity } from './../../models/entities/users.entity';
+import { UpdatePostDto } from './dto/update-post.dto';
+import { UsersEntity, PostEntity } from './../../models/entities';
 import { UsersService } from './../users/users.service';
-import { PostEntity } from './../../models/entities/post.entity';
 import { httpErrors } from './../../shares/exceptions/index';
-import { PostRepository } from './../../models/repositories/post.repository';
+import { PostRepository, FriendsRepository } from './../../models/repositories';
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { CreatePostDto } from './dto/createPost.dto';
+import { CreatePostDto } from './dto/create-post.dto';
 
 @Injectable()
 export class PostService {
@@ -15,8 +13,8 @@ export class PostService {
     @InjectRepository(PostRepository)
     private readonly postRepository: PostRepository,
 
-    @InjectRepository(UserRepository)
-    private readonly userRepository: UserRepository,
+    @InjectRepository(FriendsRepository)
+    private readonly friendsRepository: FriendsRepository,
 
     private readonly usersService: UsersService,
   ) {}
@@ -94,5 +92,34 @@ export class PostService {
     }
     await this.postRepository.delete(post.id);
     return { msg: 'Delete post successfully' };
+  }
+
+  async getPostsByCurrentUser(currentUserId: string): Promise<PostEntity[]> {
+    const posts = await this.postRepository.find({
+      relations: ['userId'],
+      where: { userId: currentUserId },
+    });
+    return posts;
+  }
+
+  async getPostsByUserId(userId: string, currentUserId: string) {
+    if (userId === currentUserId) {
+      return await this.getPostsByCurrentUser(currentUserId);
+    }
+    const isFriend = await this.friendsRepository.getStatusFriend(
+      currentUserId,
+      userId,
+    );
+    const posts = await this.postRepository.find({
+      relations: ['userId'],
+      where: [
+        { userId: userId, postMode: 'public' },
+        {
+          userId: userId,
+          postMode: isFriend === 'friend' ? 'friend' : 'public',
+        },
+      ],
+    });
+    return posts;
   }
 }

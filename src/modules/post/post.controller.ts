@@ -11,10 +11,10 @@ import {
   Post,
   UseGuards,
 } from '@nestjs/common';
-import { CreatePostDto } from './dto/createPost.dto';
+import { CreatePostDto } from './dto/create-post.dto';
 import { PostService } from './post.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-import { UpdatePostDto } from './dto/updatePost.dto';
+import { UpdatePostDto } from './dto/update-post.dto';
 
 @UseGuards(JwtAuthGuard)
 @Controller('post')
@@ -22,37 +22,52 @@ export class PostController {
   constructor(private readonly postService: PostService) {}
 
   @Post('create')
-  async createPost(
+  createPost(
     @Body() createPostDto: CreatePostDto,
     @GetUser() user: UsersEntity,
   ): Promise<PostEntity> {
-    return await this.postService.createPost(user.id, createPostDto);
+    return this.postService.createPost(user.id, createPostDto);
   }
 
   @Get('')
-  async getAllPost() {
-    return await this.postService.getAllPost();
+  getAllPost() {
+    return this.postService.getAllPost();
+  }
+
+  @Get('user')
+  getPostsByCurrentUser(
+    @GetUser() currentUser: UsersEntity,
+  ): Promise<PostEntity[]> {
+    return this.postService.getPostsByCurrentUser(currentUser.id);
   }
 
   @Get(':id')
-  async getPostById(@Param('id') postId: string): Promise<PostEntity> {
-    return await this.postService.getPostById(postId);
+  getPostById(@Param('id') postId: string): Promise<PostEntity> {
+    return this.postService.getPostById(postId);
   }
 
   @Patch(':id')
-  async updatePost(
+  updatePost(
     @Body() updatePostDto: UpdatePostDto,
     @Param('id') postId: string,
     @GetUser() user: UsersEntity,
   ): Promise<PostEntity> {
-    return await this.postService.updatePost(user.id, postId, updatePostDto);
+    return this.postService.updatePost(user.id, postId, updatePostDto);
   }
 
   @Delete(':id')
-  async deletePost(
+  deletePost(
     @Param('id') postId: string,
     @GetUser() user: UsersEntity,
   ): Promise<{ msg: string }> {
-    return await this.postService.deletePost(user.id, postId);
+    return this.postService.deletePost(user.id, postId);
+  }
+
+  @Get('user/:id')
+  getPostsByUserId(
+    @Param('id') userId: string,
+    @GetUser() currentUser: UsersEntity,
+  ): Promise<PostEntity[]> {
+    return this.postService.getPostsByUserId(userId, currentUser.id);
   }
 }

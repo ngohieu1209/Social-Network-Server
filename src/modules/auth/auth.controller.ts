@@ -1,12 +1,11 @@
-import { UsersEntity } from './../../models/entities/users.entity';
 import { Body, Controller, Post, Req, Res, UseGuards } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { GetUser } from 'src/shares/decorators/get-user.decorator';
-import { CreateUserDto } from '../users/dto/createUser.dto';
-import { AuthService } from './auth.service';
-import { ActivateEmailDto } from './dto/activateEmail.dto';
-import { SignInDto } from './dto/signin.dto';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
+import { UsersEntity } from './../../models/entities/users.entity';
+import { CreateUserDto } from '../users/dto/create-user.dto';
+import { AuthService } from './auth.service';
+import { SignInDto, ActivateEmailDto } from './dto';
 
 @Controller('auth')
 export class AuthController {

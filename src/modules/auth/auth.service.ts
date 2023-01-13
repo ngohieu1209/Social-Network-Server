@@ -1,21 +1,28 @@
-import { ResetPasswordDto } from './dto/resetPassword.dto';
-import { ActivateEmailDto } from './dto/activateEmail.dto';
-import { httpErrors } from './../../shares/exceptions/index';
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
+import { InjectRepository } from '@nestjs/typeorm';
+import { UserRepository } from './../../models/repositories';
+import { httpErrors } from './../../shares/exceptions/index';
 import * as bcrypt from 'bcrypt';
 import * as nodemailer from 'nodemailer';
-import { AccessTokenDto } from './dto/accessToken.dto';
-import { ActivationTokenDto } from './dto/ActivationToken.dto';
-import { CreateUserDto } from '../users/dto/createUser.dto';
-import { RefreshTokenDto } from './dto/refreshToken.dto';
+import { CreateUserDto } from '../users/dto/create-user.dto';
 import { UsersService } from '../users/users.service';
-import { SignInDto } from './dto/signin.dto';
+import {
+  SignInDto,
+  RefreshTokenDto,
+  ActivationTokenDto,
+  AccessTokenDto,
+  ResetPasswordDto,
+  ActivateEmailDto,
+} from './dto';
 
 @Injectable()
 export class AuthService {
   constructor(
+    @InjectRepository(UserRepository)
+    private readonly userRepository: UserRepository,
+
     private readonly configService: ConfigService,
     private readonly jwtService: JwtService,
     private readonly usersService: UsersService,
@@ -75,7 +82,7 @@ export class AuthService {
 
   async signIn(signInDto: SignInDto): Promise<{ refreshToken: string }> {
     const { email, password } = signInDto;
-    const user = await this.usersService.findUserByEmail(email);
+    const user = await this.userRepository.findUserByEmail(email);
     if (!user)
       throw new HttpException(
         httpErrors.ACCOUNT_INCORRECT,
@@ -114,7 +121,7 @@ export class AuthService {
   }
 
   async forgotPassword(email: string): Promise<{ msg: string }> {
-    const user = await this.usersService.findUserByEmail(email);
+    const user = await this.userRepository.findUserByEmail(email);
     if (!user)
       throw new HttpException(
         httpErrors.USER_EMAIL_NOT_EXISTED,
