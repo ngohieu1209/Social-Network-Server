@@ -15,9 +15,11 @@ export class FriendsEntity {
   id: string;
 
   @Column({ nullable: false })
+  @Expose()
   userSend: string;
 
   @Column({ nullable: false })
+  @Expose()
   userReceive: string;
 
   @Column({

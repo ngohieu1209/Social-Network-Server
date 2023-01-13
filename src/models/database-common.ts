@@ -1,17 +1,19 @@
 import { Global, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { SocialLinksEntity } from './entities';
-import { FriendsEntity } from './entities/friends.entity';
-import { UploadEntity } from './entities/upload.entity';
-import { PostRepository } from './repositories/post.repository';
-import { UserRepository } from './repositories/users.repository';
+import {
+  FriendsRepository,
+  PostRepository,
+  SocialLinksRepository,
+  UploadRepository,
+  UserRepository,
+} from './repositories';
 
 const commonRepositories = [
   UserRepository,
-  SocialLinksEntity,
-  FriendsEntity,
+  SocialLinksRepository,
   PostRepository,
-  UploadEntity,
+  FriendsRepository,
+  UploadRepository,
 ];
 
 @Global()
