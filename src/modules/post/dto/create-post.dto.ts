@@ -1,4 +1,4 @@
-import { PostMode } from './../../../shares/enums/postMode.enum';
+import { PostMode } from '../../../shares/enums/postMode.enum';
 import { IsEnum, IsOptional, IsString, Min } from 'class-validator';
 
 export class CreatePostDto {

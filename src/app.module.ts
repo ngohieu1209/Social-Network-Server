@@ -7,6 +7,7 @@ import * as config from './ormconfig';
 import { DatabaseCommonModule } from './models/database-common';
 import { PostModule } from './modules/post/post.module';
 import { UploadModule } from './modules/upload/upload.module';
+import { SocialLinkModule } from './modules/social-link/social-link.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { UploadModule } from './modules/upload/upload.module';
     UsersModule,
     PostModule,
     UploadModule,
+    SocialLinkModule,
   ],
 })
 export class AppModule {}
