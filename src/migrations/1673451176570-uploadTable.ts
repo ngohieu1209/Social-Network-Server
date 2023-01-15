@@ -15,6 +15,11 @@ export class uploadTable1673451176570 implements MigrationInterface {
             isNullable: false,
           },
           {
+            name: 'public_id',
+            type: 'varchar',
+            isNullable: false,
+          },
+          {
             name: 'name',
             type: 'varchar',
             isNullable: true,
@@ -37,7 +42,7 @@ export class uploadTable1673451176570 implements MigrationInterface {
           {
             name: 'postId',
             type: 'varchar',
-            isNullable: false,
+            isNullable: true,
           },
           {
             name: 'createdAt',

@@ -92,7 +92,7 @@ export const httpErrors = {
     message: 'You do not have permission to edit this post',
     code: 'POST_00002',
   },
-  ORDER_ALREADY_CANCELED: {
+  UPLOAD_IMAGE_EXISTED: {
     message: 'This order have been already canceled and waiting to confirm.',
     code: 'ORDER_00003',
   },

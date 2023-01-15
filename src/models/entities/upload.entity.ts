@@ -15,6 +15,10 @@ export class UploadEntity {
 
   @Column()
   @Expose()
+  public_id: string;
+
+  @Column()
+  @Expose()
   name: string;
 
   @Column()

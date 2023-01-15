@@ -4,12 +4,9 @@ import {
   Column,
   CreateDateColumn,
   Entity,
-  JoinColumn,
-  ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { UsersEntity } from './users.entity';
 @Entity({
   name: 'post',
 })
@@ -45,10 +42,6 @@ export class PostEntity {
   @Expose()
   updatedAt: Date;
 
-  @ManyToOne(() => UsersEntity, {
-    cascade: true,
-    eager: true,
-  })
-  @JoinColumn({ name: 'userId' })
-  userId: UsersEntity;
+  @Column()
+  userId: string;
 }

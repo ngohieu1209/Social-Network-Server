@@ -32,7 +32,7 @@ export class PostService {
     }
     const newPost = await this.postRepository.save({
       ...createPostDto,
-      userId: user,
+      userId: user.id,
     });
     return newPost;
   }
