@@ -16,11 +16,11 @@ export class FriendsEntity {
 
   @Column({ nullable: false })
   @Expose()
-  userSend: string;
+  user_send_request: string;
 
   @Column({ nullable: false })
   @Expose()
-  userReceive: string;
+  user_receive_request: string;
 
   @Column({
     type: 'enum',

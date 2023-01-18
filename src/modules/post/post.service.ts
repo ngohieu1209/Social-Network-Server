@@ -1,5 +1,10 @@
+import { ResponsePostsDto } from './../../shares/dtos/response-posts.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
-import { UsersEntity, PostEntity } from './../../models/entities';
+import {
+  UsersEntity,
+  PostEntity,
+  FriendsEntity,
+} from './../../models/entities';
 import { UsersService } from './../users/users.service';
 import { httpErrors } from './../../shares/exceptions/index';
 import { PostRepository, FriendsRepository } from './../../models/repositories';
@@ -37,10 +42,23 @@ export class PostService {
     return newPost;
   }
 
-  async getAllPost() {
-    return await this.postRepository.find({
-      relations: ['userId'],
-    });
+  async getAllPost(userId: string, page: number) {
+    const friends: FriendsEntity[] =
+      await this.friendsRepository.getListFriends(userId);
+    const friendUserSend = friends
+      .filter((friend: FriendsEntity) => friend.user_send_request !== userId)
+      .map((friend: FriendsEntity) => friend.user_send_request);
+    const friendUserReceive = friends
+      .filter((friend: FriendsEntity) => friend.user_receive_request !== userId)
+      .map((friend: FriendsEntity) => friend.user_receive_request);
+    const listFriends = [...friendUserSend, ...friendUserReceive, userId];
+
+    const followings = await this.friendsRepository.getListFollowing(userId);
+    const listFollowing = followings.map(
+      (following: FriendsEntity) => following.user_receive_request,
+    );
+
+    return await this.postRepository.getAll(listFriends, listFollowing, page);
   }
 
   async getPostById(postId: string) {
@@ -94,32 +112,36 @@ export class PostService {
     return { msg: 'Delete post successfully' };
   }
 
-  async getPostsByCurrentUser(currentUserId: string): Promise<PostEntity[]> {
-    const posts = await this.postRepository.find({
-      relations: ['userId'],
-      where: { userId: currentUserId },
-    });
-    return posts;
+  async getPostsByCurrentUser(
+    currentUserId: string,
+    page: number,
+  ): Promise<ResponsePostsDto<PostEntity[]>> {
+    const data = await this.postRepository.getByCurrentUser(
+      currentUserId,
+      page,
+    );
+    return data;
   }
 
-  async getPostsByUserId(userId: string, currentUserId: string) {
-    if (userId === currentUserId) {
-      return await this.getPostsByCurrentUser(currentUserId);
-    }
-    const isFriend = await this.friendsRepository.getStatusFriend(
-      currentUserId,
-      userId,
-    );
-    const posts = await this.postRepository.find({
-      relations: ['userId'],
-      where: [
-        { userId: userId, postMode: 'public' },
-        {
-          userId: userId,
-          postMode: isFriend === 'friend' ? 'friend' : 'public',
-        },
-      ],
-    });
-    return posts;
+  async getPostsByUserId(
+    userId: string,
+    currentUserId: string,
+    page: number,
+  ): Promise<ResponsePostsDto<PostEntity[]>> {
+    try {
+      if (userId === currentUserId) {
+        return await this.getPostsByCurrentUser(currentUserId, page);
+      }
+      const friendStatus = await this.friendsRepository.getStatusFriend(
+        currentUserId,
+        userId,
+      );
+      const posts = await this.postRepository.getByUserId(
+        userId,
+        friendStatus,
+        page,
+      );
+      return posts;
+    } catch (error) {}
   }
 }
