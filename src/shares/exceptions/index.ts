@@ -96,7 +96,7 @@ export const httpErrors = {
     message: 'This order have been already canceled and waiting to confirm.',
     code: 'ORDER_00003',
   },
-  ORDER_UNKNOWN_VALIDATION_FAIL: {
+  UPLOAD_IMAGE_NOT_FOUND: {
     message: 'Order validation failed.',
     code: 'ORDER_00004',
   },

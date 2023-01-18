@@ -62,10 +62,7 @@ export class PostService {
   }
 
   async getPostById(postId: string) {
-    const post: PostEntity = await this.postRepository.findOne({
-      relations: ['userId'],
-      where: { id: postId },
-    });
+    const post: PostEntity = await this.postRepository.getById(postId);
     if (!post) {
       throw new HttpException(
         httpErrors.POST_NOT_FOUND,
@@ -81,7 +78,6 @@ export class PostService {
     updatePostDto: UpdatePostDto,
   ): Promise<PostEntity> {
     const post: PostEntity = await this.postRepository.findOne({
-      relations: ['userId'],
       where: { userId: userId, id: postId },
     });
     if (!post) {
