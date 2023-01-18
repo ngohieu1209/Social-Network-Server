@@ -3,12 +3,14 @@ import { httpErrors } from './../../shares/exceptions/index';
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpException,
   HttpStatus,
   Param,
   ParseFilePipe,
   Post,
+  Query,
   UploadedFile,
   UploadedFiles,
   UseGuards,
@@ -110,5 +112,10 @@ export class UploadController {
   @Get('post/:postId')
   getPostUploads(@Param('postId') postId: string) {
     return this.uploadService.getPostUploads(postId);
+  }
+
+  @Delete('delete')
+  removeUpload(@Query('id') id: string) {
+    return this.uploadService.removeUpload(id);
   }
 }

@@ -122,4 +122,34 @@ export class PostRepository extends Repository<PostEntity> {
       };
     else return null;
   }
+
+  async getById(id: string) {
+    const post = await this.createQueryBuilder('post')
+      .innerJoinAndMapOne(
+        'post.userId',
+        'users',
+        'user',
+        'user.id = post.userId',
+      )
+      .leftJoinAndMapMany(
+        'post.upload',
+        'upload',
+        'upload',
+        'post.id = upload.postId',
+      )
+      .select([
+        'post',
+        'user.id',
+        'user.avatar',
+        'user.firstName',
+        'user.lastName',
+        'upload',
+      ])
+      .where('(post.id = :id)', {
+        id,
+      })
+      .getOne();
+    if (post) return post;
+    else return null;
+  }
 }

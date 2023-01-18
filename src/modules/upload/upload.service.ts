@@ -63,7 +63,6 @@ export class UploadService {
       const data: Partial<UploadApiResponse> = await this.deleteImageCloudinary(
         public_id,
       );
-      console.log(data);
       return { result: data.result };
     } catch (error) {
       throw new HttpException(
@@ -126,5 +125,20 @@ export class UploadService {
     return await this.uploadRepository.find({
       where: { postId },
     });
+  }
+
+  async removeUpload(public_id: string) {
+    const upload = await this.uploadRepository.findOne({
+      where: { public_id },
+    });
+    if (!upload) {
+      throw new HttpException(
+        httpErrors.UPLOAD_IMAGE_NOT_FOUND,
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+    await this.deleteImage(public_id);
+    await this.uploadRepository.delete(upload);
+    return { msg: 'Delete upload successfully' };
   }
 }
