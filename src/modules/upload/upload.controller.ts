@@ -3,8 +3,10 @@ import { httpErrors } from './../../shares/exceptions/index';
 import {
   Body,
   Controller,
+  Get,
   HttpException,
   HttpStatus,
+  Param,
   ParseFilePipe,
   Post,
   UploadedFile,
@@ -101,7 +103,12 @@ export class UploadController {
   }
 
   @Post('create')
-  async createUpload(@Body() createUpload: CreateUploadDto) {
+  createUpload(@Body() createUpload: CreateUploadDto) {
     return this.uploadService.createUpload(createUpload);
+  }
+
+  @Get('post/:postId')
+  getPostUploads(@Param('postId') postId: string) {
+    return this.uploadService.getPostUploads(postId);
   }
 }

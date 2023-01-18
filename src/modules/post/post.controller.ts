@@ -1,3 +1,4 @@
+import { ResponsePostsDto } from './../../shares/dtos/response-posts.dto';
 import { PostEntity } from './../../models/entities/post.entity';
 import { UsersEntity } from './../../models/entities/users.entity';
 import { GetUser } from 'src/shares/decorators/get-user.decorator';
@@ -9,6 +10,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import { CreatePostDto } from './dto/create-post.dto';
@@ -29,16 +31,20 @@ export class PostController {
     return this.postService.createPost(user.id, createPostDto);
   }
 
-  @Get('')
-  getAllPost() {
-    return this.postService.getAllPost();
+  @Get()
+  getAllPost(
+    @Query('page') page: number,
+    @GetUser() user: UsersEntity,
+  ): Promise<any> {
+    return this.postService.getAllPost(user.id, page);
   }
 
   @Get('user')
   getPostsByCurrentUser(
+    @Query('page') page: number,
     @GetUser() currentUser: UsersEntity,
-  ): Promise<PostEntity[]> {
-    return this.postService.getPostsByCurrentUser(currentUser.id);
+  ): Promise<ResponsePostsDto<PostEntity[]>> {
+    return this.postService.getPostsByCurrentUser(currentUser.id, page);
   }
 
   @Get(':id')
@@ -66,8 +72,9 @@ export class PostController {
   @Get('user/:id')
   getPostsByUserId(
     @Param('id') userId: string,
+    @Query('page') page: number,
     @GetUser() currentUser: UsersEntity,
-  ): Promise<PostEntity[]> {
-    return this.postService.getPostsByUserId(userId, currentUser.id);
+  ): Promise<ResponsePostsDto<PostEntity[]>> {
+    return this.postService.getPostsByUserId(userId, currentUser.id, page);
   }
 }

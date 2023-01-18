@@ -121,4 +121,10 @@ export class UploadService {
     }
     return await this.uploadRepository.save(createUpload);
   }
+
+  async getPostUploads(postId: string) {
+    return await this.uploadRepository.find({
+      where: { postId },
+    });
+  }
 }
