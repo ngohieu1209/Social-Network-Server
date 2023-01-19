@@ -7,10 +7,15 @@ import {
 } from './../../models/entities';
 import { UsersService } from './../users/users.service';
 import { httpErrors } from './../../shares/exceptions/index';
-import { PostRepository, FriendsRepository } from './../../models/repositories';
+import {
+  PostRepository,
+  FriendsRepository,
+  UploadRepository,
+} from './../../models/repositories';
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreatePostDto } from './dto/create-post.dto';
+import { UploadService } from '../upload/upload.service';
 
 @Injectable()
 export class PostService {
@@ -21,7 +26,11 @@ export class PostService {
     @InjectRepository(FriendsRepository)
     private readonly friendsRepository: FriendsRepository,
 
+    @InjectRepository(UploadRepository)
+    private readonly uploadRepository: UploadRepository,
+
     private readonly usersService: UsersService,
+    private readonly uploadService: UploadService,
   ) {}
 
   async createPost(
@@ -95,7 +104,6 @@ export class PostService {
 
   async deletePost(userId: string, postId: string): Promise<{ msg: string }> {
     const post: PostEntity = await this.postRepository.findOne({
-      relations: ['userId'],
       where: { userId: userId, id: postId },
     });
     if (!post) {
@@ -103,6 +111,15 @@ export class PostService {
         httpErrors.POST_NOT_FOUND,
         HttpStatus.BAD_REQUEST,
       );
+    }
+    const uploads = await this.uploadRepository.find({
+      where: { postId: post.id },
+      select: ['public_id'],
+    });
+    if (uploads.length > 0) {
+      for (const upload of uploads) {
+        await this.uploadService.deleteImage(upload.public_id);
+      }
     }
     await this.postRepository.delete(post.id);
     return { msg: 'Delete post successfully' };
