@@ -11,4 +11,18 @@ export class UserRepository extends Repository<UsersEntity> {
     if (user) return user;
     else return null;
   }
+
+  async findUserById(id: string) {
+    const user = await this.createQueryBuilder('user')
+      .leftJoinAndMapOne(
+        'user.avatar',
+        'upload',
+        'upload',
+        'user.avatar = upload.id',
+      )
+      .where('user.id = :id', { id: id })
+      .getOne();
+    if (user) return user;
+    else return null;
+  }
 }
