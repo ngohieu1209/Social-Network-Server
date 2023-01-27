@@ -20,7 +20,21 @@ export class UserRepository extends Repository<UsersEntity> {
         'upload',
         'user.avatar = upload.id',
       )
+      .leftJoinAndMapOne(
+        'user.links',
+        'socialLinks',
+        'socialLinks',
+        'user.id = socialLinks.userId',
+      )
       .where('user.id = :id', { id: id })
+      .select([
+        'user',
+        'upload.public_id',
+        'upload.file',
+        'upload.fileType',
+        'upload.url',
+        'socialLinks',
+      ])
       .getOne();
     if (user) return user;
     else return null;
