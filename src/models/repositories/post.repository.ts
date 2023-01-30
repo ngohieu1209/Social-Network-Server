@@ -19,10 +19,17 @@ export class PostRepository extends Repository<PostEntity> {
         'upload',
         'post.id = upload.postId',
       )
+      .leftJoinAndMapOne(
+        'user.avatar',
+        'upload',
+        'avatar',
+        'user.avatar = avatar.id',
+      )
       .select([
         'post',
         'user.id',
         'user.avatar',
+        'avatar.url',
         'user.firstName',
         'user.lastName',
         'upload',
@@ -55,10 +62,17 @@ export class PostRepository extends Repository<PostEntity> {
         'upload',
         'post.id = upload.postId',
       )
+      .leftJoinAndMapOne(
+        'user.avatar',
+        'upload',
+        'avatar',
+        'user.avatar = avatar.id',
+      )
       .select([
         'post',
         'user.id',
         'user.avatar',
+        'avatar.url',
         'user.firstName',
         'user.lastName',
         'upload',
@@ -95,10 +109,17 @@ export class PostRepository extends Repository<PostEntity> {
         'upload',
         'post.id = upload.postId',
       )
+      .leftJoinAndMapOne(
+        'user.avatar',
+        'upload',
+        'avatar',
+        'user.avatar = avatar.id',
+      )
       .select([
         'post',
         'user.id',
         'user.avatar',
+        'avatar.url',
         'user.firstName',
         'user.lastName',
         'upload',
@@ -137,10 +158,17 @@ export class PostRepository extends Repository<PostEntity> {
         'upload',
         'post.id = upload.postId',
       )
+      .leftJoinAndMapOne(
+        'user.avatar',
+        'upload',
+        'avatar',
+        'user.avatar = avatar.id',
+      )
       .select([
         'post',
         'user.id',
         'user.avatar',
+        'avatar.url',
         'user.firstName',
         'user.lastName',
         'upload',
