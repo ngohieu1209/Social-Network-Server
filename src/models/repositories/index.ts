@@ -3,6 +3,7 @@ import { SocialLinksRepository } from './social-links.repository';
 import { PostRepository } from './post.repository';
 import { FriendsRepository } from './friends.repository';
 import { UploadRepository } from './upload.repository';
+import { LikeRepository } from './like.repository';
 
 export {
   UserRepository,
@@ -10,4 +11,5 @@ export {
   PostRepository,
   FriendsRepository,
   UploadRepository,
+  LikeRepository,
 };
