@@ -27,8 +27,8 @@ export class friendsTable1673081473715 implements MigrationInterface {
           {
             name: 'status',
             type: 'enum',
-            enum: ['stranger', 'follow', 'friend'],
-            default: "'stranger'",
+            enum: ['follow', 'friend'],
+            default: "'follow'",
           },
           {
             name: 'createdAt',
