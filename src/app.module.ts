@@ -9,6 +9,7 @@ import { PostModule } from './modules/post/post.module';
 import { UploadModule } from './modules/upload/upload.module';
 import { SocialLinkModule } from './modules/social-link/social-link.module';
 import { FriendModule } from './modules/friend/friend.module';
+import { LikeModule } from './modules/like/like.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { FriendModule } from './modules/friend/friend.module';
     UploadModule,
     SocialLinkModule,
     FriendModule,
+    LikeModule,
   ],
 })
 export class AppModule {}
