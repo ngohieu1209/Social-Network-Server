@@ -8,6 +8,7 @@ import { DatabaseCommonModule } from './models/database-common';
 import { PostModule } from './modules/post/post.module';
 import { UploadModule } from './modules/upload/upload.module';
 import { SocialLinkModule } from './modules/social-link/social-link.module';
+import { FriendModule } from './modules/friend/friend.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { SocialLinkModule } from './modules/social-link/social-link.module';
     PostModule,
     UploadModule,
     SocialLinkModule,
+    FriendModule,
   ],
 })
 export class AppModule {}

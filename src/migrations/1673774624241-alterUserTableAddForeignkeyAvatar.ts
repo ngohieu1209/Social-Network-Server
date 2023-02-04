@@ -7,6 +7,7 @@ export class alterUserTableAddForeignkeyAvatar1673774624241
     await queryRunner.createForeignKey(
       'users',
       new TableForeignKey({
+        name: 'FKUserAvatar',
         columnNames: ['avatar'],
         referencedTableName: 'upload',
         referencedColumnNames: ['id'],

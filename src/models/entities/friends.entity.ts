@@ -25,7 +25,7 @@ export class FriendsEntity {
   @Column({
     type: 'enum',
     enum: FriendStatus,
-    default: FriendStatus.STRANGER,
+    default: FriendStatus.FOLLOW,
   })
   @Expose()
   status: string;
