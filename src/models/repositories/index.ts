@@ -4,6 +4,7 @@ import { PostRepository } from './post.repository';
 import { FriendsRepository } from './friends.repository';
 import { UploadRepository } from './upload.repository';
 import { LikeRepository } from './like.repository';
+import { CommentRepository } from './comment.repository';
 
 export {
   UserRepository,
@@ -12,4 +13,5 @@ export {
   FriendsRepository,
   UploadRepository,
   LikeRepository,
+  CommentRepository,
 };
