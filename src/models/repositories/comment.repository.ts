@@ -20,20 +20,12 @@ export class CommentRepository extends Repository<CommentEntity> {
         'avatar',
         'user.avatar = avatar.id',
       )
-      .innerJoinAndMapOne(
-        'comment.postId',
-        'post',
-        'post',
-        'post.id = comment.postId',
-      )
       .select([
         'comment',
         'user.id',
         'user.firstName',
         'user.lastName',
         'avatar.url',
-        'post.id',
-        'post.userId',
       ])
       .offset((page - 1) * perPage)
       .limit(perPage)

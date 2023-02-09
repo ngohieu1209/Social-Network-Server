@@ -1,11 +1,21 @@
-import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
+import {
+  Injectable,
+  CanActivate,
+  ExecutionContext,
+  HttpException,
+  HttpStatus,
+} from '@nestjs/common';
+import { httpErrors } from 'src/shares/exceptions';
 
 @Injectable()
 export class AuthenticatedWsGuard implements CanActivate {
   canActivate(context: ExecutionContext): boolean {
-    const client = context.switchToWs().getClient();
-    console.log('irene');
-    console.log(client);
-    return !!client.user.id;
+    try {
+      const client = context.switchToWs().getClient();
+      return !!client.handshake.auth.id;
+    } catch (error) {
+      //TODO: handle error
+      throw new HttpException(httpErrors.UNAUTHORIZED, HttpStatus.BAD_REQUEST);
+    }
   }
 }

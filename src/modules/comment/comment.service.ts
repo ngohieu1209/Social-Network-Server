@@ -41,17 +41,14 @@ export class CommentService {
     post.commentsCount++;
     await this.postRepository.save(post);
     return {
-      commentId: comment.id,
-      author: {
+      id: comment.id,
+      userId: {
         id: user.id,
         firstName: user.firstName,
         lastName: user.lastName,
         avatar: user.avatar['url'] || null,
       },
-      post: {
-        id: post.id,
-        userId: post.userId,
-      },
+      postId: comment.postId,
       content: comment.content,
       createdAt: comment.createdAt,
       updatedAt: comment.updatedAt,

@@ -19,7 +19,7 @@ import { CreateCommentDto } from '../comment/dto/create-comment.dto';
 import { WebsocketService } from './websocket.service';
 import { AuthenticatedWsGuard } from '../auth/guards/authenticated-ws.guard';
 
-// @UseGuards(AuthenticatedWsGuard)
+@UseGuards(AuthenticatedWsGuard)
 @WebSocketGateway({
   cors: { origin: true, credentials: true },
 })
@@ -67,7 +67,7 @@ export class WebsocketGateway
     @MessageBody() createCommentDto: CreateCommentDto,
   ) {
     const data = await this.commentService.createComment(createCommentDto);
-    socket.emit(event_onNewComment, {
+    this.server.emit(event_onNewComment, {
       ACTION: action_newComment,
       PAYLOAD: data,
     });
