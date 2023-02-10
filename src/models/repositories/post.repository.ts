@@ -29,24 +29,6 @@ export class PostRepository extends Repository<PostEntity> {
         'avatar',
         'user.avatar = avatar.id',
       )
-      .leftJoinAndMapMany(
-        'post.comment',
-        'comment',
-        'comment',
-        'post.id = comment.postId',
-      )
-      .leftJoinAndMapOne(
-        'comment.userId',
-        'users',
-        'userComment',
-        'userComment.id = comment.userId',
-      )
-      .leftJoinAndMapOne(
-        'userComment.avatar',
-        'upload',
-        'avatarComment',
-        'userComment.avatar = avatarComment.id',
-      )
       .select([
         'post',
         'user.id',
@@ -55,12 +37,6 @@ export class PostRepository extends Repository<PostEntity> {
         'user.firstName',
         'user.lastName',
         'upload',
-        'comment',
-        'userComment.id',
-        'userComment.firstName',
-        'userComment.lastName',
-        'userComment.avatar',
-        'avatarComment.url',
       ])
       .offset((page - 1) * perPage)
       .limit(perPage)
@@ -96,24 +72,6 @@ export class PostRepository extends Repository<PostEntity> {
         'avatar',
         'user.avatar = avatar.id',
       )
-      .leftJoinAndMapMany(
-        'post.comment',
-        'comment',
-        'comment',
-        'post.id = comment.postId',
-      )
-      .leftJoinAndMapOne(
-        'comment.userId',
-        'users',
-        'userComment',
-        'userComment.id = comment.userId',
-      )
-      .leftJoinAndMapOne(
-        'userComment.avatar',
-        'upload',
-        'avatarComment',
-        'userComment.avatar = avatarComment.id',
-      )
       .select([
         'post',
         'user.id',
@@ -122,12 +80,6 @@ export class PostRepository extends Repository<PostEntity> {
         'user.firstName',
         'user.lastName',
         'upload',
-        'comment',
-        'userComment.id',
-        'userComment.firstName',
-        'userComment.lastName',
-        'userComment.avatar',
-        'avatarComment.url',
       ])
       .where('post.userId = :userId', { userId })
       .andWhere('post.postMode IN (:postMode)', {
@@ -216,24 +168,6 @@ export class PostRepository extends Repository<PostEntity> {
         'avatar',
         'user.avatar = avatar.id',
       )
-      .leftJoinAndMapMany(
-        'post.comment',
-        'comment',
-        'comment',
-        'post.id = comment.postId',
-      )
-      .leftJoinAndMapOne(
-        'comment.userId',
-        'users',
-        'userComment',
-        'userComment.id = comment.userId',
-      )
-      .leftJoinAndMapOne(
-        'userComment.avatar',
-        'upload',
-        'avatarComment',
-        'userComment.avatar = avatarComment.id',
-      )
       .select([
         'post',
         'user.id',
@@ -242,12 +176,6 @@ export class PostRepository extends Repository<PostEntity> {
         'user.firstName',
         'user.lastName',
         'upload',
-        'comment',
-        'userComment.id',
-        'userComment.firstName',
-        'userComment.lastName',
-        'userComment.avatar',
-        'avatarComment.url',
       ])
       .where('(post.id = :id)', {
         id,
