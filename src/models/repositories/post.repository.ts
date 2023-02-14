@@ -1,9 +1,13 @@
 import { EntityRepository, Repository } from 'typeorm';
-import { PostEntity } from '../entities';
+import { CommentEntity, PostEntity } from '../entities';
+import { getConnection } from 'typeorm';
 
 const perPage = 10;
 @EntityRepository(PostEntity)
 export class PostRepository extends Repository<PostEntity> {
+  private commentRepository: Repository<CommentEntity> =
+    getConnection().getRepository('comment');
+
   async getByCurrentUser(currentUserId: string, page: number) {
     const posts = await this.createQueryBuilder('post')
       .where('post.userId = :currentUserId', { currentUserId })
@@ -97,23 +101,32 @@ export class PostRepository extends Repository<PostEntity> {
   async getAll(listFriends: string[], listFollowing: string[], page: number) {
     const listUser = [...listFollowing, ...listFriends];
     const posts = await this.createQueryBuilder('post')
+      .where(
+        '(post.postMode = "public" AND post.userId IN (:listUser)) OR (post.postMode = "friend" AND post.userId IN (:listFriends))',
+        {
+          listUser: listUser.length > 0 ? listUser : [''],
+          listFriends: listFriends.length ? listFriends : [''],
+        },
+      )
+      .offset((page - 1) * perPage)
+      .limit(perPage)
       .innerJoinAndMapOne(
         'post.userId',
         'users',
         'user',
         'user.id = post.userId',
       )
-      .leftJoinAndMapMany(
-        'post.upload',
-        'upload',
-        'upload',
-        'post.id = upload.postId',
-      )
       .leftJoinAndMapOne(
         'user.avatar',
         'upload',
         'avatar',
         'user.avatar = avatar.id',
+      )
+      .leftJoinAndMapMany(
+        'post.upload',
+        'upload',
+        'upload',
+        'post.id = upload.postId',
       )
       .select([
         'post',
@@ -124,15 +137,6 @@ export class PostRepository extends Repository<PostEntity> {
         'user.lastName',
         'upload',
       ])
-      .where(
-        '(post.postMode = "public" AND post.userId IN (:listUser)) OR (post.postMode = "friend" AND post.userId IN (:listFriends))',
-        {
-          listUser: listUser.length > 0 ? listUser : [''],
-          listFriends: listFriends.length ? listFriends : [''],
-        },
-      )
-      .offset((page - 1) * perPage)
-      .limit(perPage)
       .orderBy('post.createdAt', 'DESC')
       .getManyAndCount();
     if (posts)

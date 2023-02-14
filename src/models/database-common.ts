@@ -7,6 +7,7 @@ import {
   UploadRepository,
   UserRepository,
   LikeRepository,
+  CommentRepository,
 } from './repositories';
 
 const commonRepositories = [
@@ -16,6 +17,7 @@ const commonRepositories = [
   FriendsRepository,
   UploadRepository,
   LikeRepository,
+  CommentRepository,
 ];
 
 @Global()

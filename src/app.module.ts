@@ -10,6 +10,8 @@ import { UploadModule } from './modules/upload/upload.module';
 import { SocialLinkModule } from './modules/social-link/social-link.module';
 import { FriendModule } from './modules/friend/friend.module';
 import { LikeModule } from './modules/like/like.module';
+import { WebsocketModule } from './modules/websocket/websocket.module';
+import { CommentModule } from './modules/comment/comment.module';
 
 @Module({
   imports: [
@@ -27,6 +29,8 @@ import { LikeModule } from './modules/like/like.module';
     SocialLinkModule,
     FriendModule,
     LikeModule,
+    WebsocketModule,
+    CommentModule,
   ],
 })
 export class AppModule {}
