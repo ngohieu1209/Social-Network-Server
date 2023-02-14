@@ -5,6 +5,7 @@ import { FriendsEntity } from './friends.entity';
 import { UploadEntity } from './upload.entity';
 import { LikeEntity } from './like.entity';
 import { CommentEntity } from './comment.entity';
+import { NotificationEntity } from './notification.entity';
 
 export {
   UsersEntity,
@@ -14,4 +15,5 @@ export {
   UploadEntity,
   LikeEntity,
   CommentEntity,
+  NotificationEntity,
 };
