@@ -1,6 +1,10 @@
 import {
   event_onNewComment,
+  event_onEditComment,
   action_newComment,
+  action_editComment,
+  event_onDeleteComment,
+  action_deleteComment,
 } from './../comment/utils/constants';
 import { Logger, UnauthorizedException, UseGuards } from '@nestjs/common';
 import {
@@ -18,6 +22,8 @@ import { CommentService } from '../comment/comment.service';
 import { CreateCommentDto } from '../comment/dto/create-comment.dto';
 import { WebsocketService } from './websocket.service';
 import { AuthenticatedWsGuard } from '../auth/guards/authenticated-ws.guard';
+import { EditCommentDto } from '../comment/dto/edit-comment.dto';
+import { DeleteCommentDto } from '../comment/dto/delete-comment.dto';
 
 @UseGuards(AuthenticatedWsGuard)
 @WebSocketGateway({
@@ -69,6 +75,30 @@ export class WebsocketGateway
     const data = await this.commentService.createComment(createCommentDto);
     this.server.emit(event_onNewComment, {
       ACTION: action_newComment,
+      PAYLOAD: data,
+    });
+  }
+
+  @SubscribeMessage('Comment:EditComment')
+  async onEditComment(
+    @ConnectedSocket() socket: Socket,
+    @MessageBody() editCommentDto: EditCommentDto,
+  ) {
+    const data = await this.commentService.editComment(editCommentDto);
+    this.server.emit(event_onEditComment, {
+      ACTION: action_editComment,
+      PAYLOAD: data,
+    });
+  }
+
+  @SubscribeMessage('Comment:DeleteComment')
+  async onDeleteComment(
+    @ConnectedSocket() socket: Socket,
+    @MessageBody() deleteCommentDto: DeleteCommentDto,
+  ) {
+    const data = await this.commentService.deleteComment(deleteCommentDto);
+    this.server.emit(event_onDeleteComment, {
+      ACTION: action_deleteComment,
       PAYLOAD: data,
     });
   }

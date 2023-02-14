@@ -1,3 +1,4 @@
+import { EditCommentDto } from './dto/edit-comment.dto';
 import { CommentEntity } from './../../models/entities/comment.entity';
 import { CommentRepository, PostRepository } from './../../models/repositories';
 import { Injectable } from '@nestjs/common';
@@ -5,6 +6,7 @@ import { CreateCommentDto } from './dto/create-comment.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { PostService } from '../post/post.service';
 import { UsersService } from '../users/users.service';
+import { DeleteCommentDto } from './dto/delete-comment.dto';
 
 @Injectable()
 export class CommentService {
@@ -67,5 +69,32 @@ export class CommentService {
       page,
     );
     return comments;
+  }
+
+  async editComment(editCommentDto: EditCommentDto) {
+    const comment = await this.commentRepository.update(
+      { id: editCommentDto.id },
+      { content: editCommentDto.content },
+    );
+    if (!comment.affected) {
+      throw new Error('Comment not found');
+    }
+    return editCommentDto;
+  }
+
+  async deleteComment(deleteCommentDto: DeleteCommentDto) {
+    const comment = await this.commentRepository.delete({
+      id: deleteCommentDto.id,
+    });
+    await this.postRepository.update(
+      {
+        id: deleteCommentDto.postId,
+      },
+      { commentsCount: () => 'commentsCount - 1' },
+    );
+    if (!comment.affected) {
+      throw new Error('Comment not found');
+    }
+    return deleteCommentDto;
   }
 }
