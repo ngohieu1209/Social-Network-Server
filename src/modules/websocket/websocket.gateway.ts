@@ -6,6 +6,14 @@ import {
   event_onDeleteComment,
   action_deleteComment,
 } from './../comment/utils/constants';
+import {
+  action_deleteNotification,
+  action_newNotification,
+  action_seenNotification,
+  event_onDeleteNotification,
+  event_onNewNotification,
+  event_onSeenNotification,
+} from './../notification/utils/constants';
 import { Logger, UnauthorizedException, UseGuards } from '@nestjs/common';
 import {
   ConnectedSocket,
@@ -24,6 +32,7 @@ import { WebsocketService } from './websocket.service';
 import { AuthenticatedWsGuard } from '../auth/guards/authenticated-ws.guard';
 import { EditCommentDto } from '../comment/dto/edit-comment.dto';
 import { DeleteCommentDto } from '../comment/dto/delete-comment.dto';
+import { NotificationService } from '../notification/notification.service';
 
 @UseGuards(AuthenticatedWsGuard)
 @WebSocketGateway({
@@ -35,6 +44,7 @@ export class WebsocketGateway
   constructor(
     private readonly websocketService: WebsocketService,
     private readonly commentService: CommentService,
+    private readonly notificationService: NotificationService,
   ) {}
 
   @WebSocketServer()
@@ -75,7 +85,11 @@ export class WebsocketGateway
     const data = await this.commentService.createComment(createCommentDto);
     this.server.emit(event_onNewComment, {
       ACTION: action_newComment,
-      PAYLOAD: data,
+      PAYLOAD: data.comment,
+    });
+    this.server.emit(event_onNewNotification, {
+      ACTION: action_newNotification,
+      PAYLOAD: data.notification,
     });
   }
 
@@ -99,6 +113,30 @@ export class WebsocketGateway
     const data = await this.commentService.deleteComment(deleteCommentDto);
     this.server.emit(event_onDeleteComment, {
       ACTION: action_deleteComment,
+      PAYLOAD: data,
+    });
+  }
+
+  @SubscribeMessage('Notification:SeenNotification')
+  async onSeenNotification(
+    @ConnectedSocket() socket: Socket,
+    @MessageBody() id: string,
+  ) {
+    const data = await this.notificationService.seenNotification(id);
+    this.server.emit(event_onSeenNotification, {
+      ACTION: action_seenNotification,
+      PAYLOAD: data,
+    });
+  }
+
+  @SubscribeMessage('Notification:DeleteNotification')
+  async onDeleteNotification(
+    @ConnectedSocket() socket: Socket,
+    @MessageBody() id: string,
+  ) {
+    const data = await this.notificationService.deleteNotification(id);
+    this.server.emit(event_onDeleteNotification, {
+      ACTION: action_deleteNotification,
       PAYLOAD: data,
     });
   }

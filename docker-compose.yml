@@ -12,3 +12,4 @@ services:
       MYSQL_USER: winter
       MYSQL_PASSWORD: 1
       LANG: C.UTF-8
+      TZ: Asia/Ho_Chi_Minh
