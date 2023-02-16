@@ -5,6 +5,7 @@ import {
   Controller,
   Delete,
   Get,
+  HttpCode,
   Param,
   Post,
   Query,
@@ -20,19 +21,21 @@ export class FriendController {
   constructor(private readonly friendService: FriendService) {}
 
   @Post('request')
+  @HttpCode(200)
   requestFriend(
     @Body() requestFriendDto: RequestFriendDto,
     @GetUser() currentUser: UsersEntity,
-  ) {
+  ): Promise<{ msg: string }> {
     const { userId } = requestFriendDto;
     return this.friendService.requestFriend(currentUser.id, userId);
   }
 
   @Post('accept')
+  @HttpCode(200)
   acceptFriend(
     @Body() requestFriendDto: RequestFriendDto,
     @GetUser() currentUser: UsersEntity,
-  ) {
+  ): Promise<{ msg: string }> {
     const { userId } = requestFriendDto;
     return this.friendService.acceptFriend(currentUser.id, userId);
   }
@@ -62,7 +65,7 @@ export class FriendController {
   deleteFriend(
     @GetUser() currentUser: UsersEntity,
     @Param('userId') userId: string,
-  ) {
+  ): Promise<{ msg: string }> {
     return this.friendService.deleteFriend(currentUser.id, userId);
   }
 }

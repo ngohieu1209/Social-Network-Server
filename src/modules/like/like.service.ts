@@ -19,14 +19,14 @@ export class LikeService {
         { id: postId },
         { likesCount: () => 'likesCount - 1' },
       );
-      return { message: 'Unlike post successfully' };
+      return { msg: 'Unlike post successfully' };
     } else {
       await this.likeRepository.save({ userId, postId });
       await this.postRepository.update(
         { id: postId },
         { likesCount: () => 'likesCount + 1' },
       );
-      return { message: 'Like post successfully' };
+      return { msg: 'Like post successfully' };
     }
   }
 
