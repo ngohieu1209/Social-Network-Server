@@ -5,6 +5,7 @@ import {
   Controller,
   Delete,
   Get,
+  HttpCode,
   HttpException,
   HttpStatus,
   Param,
@@ -98,6 +99,7 @@ export class UploadController {
   }
 
   @Post('delete-image')
+  @HttpCode(200)
   async deleteImage(
     @Body('public_id') public_id: string,
   ): Promise<{ result: string }> {

@@ -1,4 +1,12 @@
-import { Body, Controller, Post, Req, Res, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  HttpCode,
+  Post,
+  Req,
+  Res,
+  UseGuards,
+} from '@nestjs/common';
 import { Request, Response } from 'express';
 import { GetUser } from 'src/shares/decorators/get-user.decorator';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
@@ -12,11 +20,13 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post('signup')
+  @HttpCode(200)
   signUp(@Body() createUserDto: CreateUserDto): Promise<{ msg: string }> {
     return this.authService.signUp(createUserDto);
   }
 
   @Post('activation')
+  @HttpCode(200)
   activateEmail(
     @Body() activateEmailDto: ActivateEmailDto,
   ): Promise<{ msg: string }> {
@@ -24,10 +34,11 @@ export class AuthController {
   }
 
   @Post('signin')
+  @HttpCode(200)
   async signIn(
     @Body() signInDto: SignInDto,
     @Res() res: Response,
-  ): Promise<void> {
+  ): Promise<{ msg: string }> {
     const { refreshToken } = await this.authService.signIn(signInDto);
     res.cookie('refreshToken', refreshToken, {
       httpOnly: false,
@@ -35,22 +46,25 @@ export class AuthController {
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     });
 
-    res.status(200).json({ msg: 'Login Success!' });
+    return { msg: 'Login Success!' };
   }
 
   @Post('/refreshToken')
+  @HttpCode(200)
   async getAccessToken(@Req() req: Request): Promise<{ accessToken: string }> {
     const refreshToken = req.cookies['refreshToken'];
     return this.authService.getAccessToken(refreshToken);
   }
 
   @Post('/forgot')
+  @HttpCode(200)
   forgotPassword(@Body('email') email: string): Promise<{ msg: string }> {
     return this.authService.forgotPassword(email);
   }
 
   @UseGuards(JwtAuthGuard)
   @Post('/resetPassword')
+  @HttpCode(200)
   resetPassword(
     @Body('password') password: string,
     @GetUser() user: UsersEntity,
@@ -60,10 +74,11 @@ export class AuthController {
   }
 
   @Post('/logout')
+  @HttpCode(200)
   logout(@Res() res: Response) {
     res.clearCookie('refreshToken', {
       path: '/api/v1/auth/refreshToken',
     });
-    return res.json({ msg: 'Logout success!' });
+    return { msg: 'Logout success!' };
   }
 }
