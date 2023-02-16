@@ -110,4 +110,12 @@ export class UsersService {
     );
     return result.affected === 1;
   }
+
+  async findUsersByName(currentUserId: string, name: string) {
+    const users = await this.userRepository.findUsersByName(
+      currentUserId,
+      name,
+    );
+    return users;
+  }
 }

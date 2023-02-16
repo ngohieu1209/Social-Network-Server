@@ -26,11 +26,11 @@ export class CommentService {
     let notification = null;
     const post = await this.postRepository.findOne(postId);
     if (!post) {
-      throw new Error('Post not found');
+      return { comment: null, notification: null };
     }
     const user = await this.usersService.findUserById(userId);
     if (!user) {
-      throw new Error('User not found');
+      return { comment: null, notification: null };
     }
     if (content === undefined || (content === '' && content.length < 1)) {
       throw new Error('Comment text is required');
@@ -47,7 +47,7 @@ export class CommentService {
       notification = await this.notificationService.createNotification({
         recipient: post.userId,
         sender: userId,
-        action: 'comment',
+        action: 'commented',
         postId,
       });
     }

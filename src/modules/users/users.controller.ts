@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Param, Patch, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Patch,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { GetUser } from 'src/shares/decorators/get-user.decorator';
 import { UsersService } from './users.service';
@@ -40,5 +48,13 @@ export class UsersController {
       oldPassword,
       newPassword,
     });
+  }
+
+  @Get('search')
+  searchUser(
+    @GetUser() user: UsersEntity,
+    @Query('name') name: string,
+  ): Promise<UsersEntity[]> {
+    return this.usersService.findUsersByName(user.id, name);
   }
 }

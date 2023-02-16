@@ -83,6 +83,12 @@ export class WebsocketGateway
     @MessageBody() createCommentDto: CreateCommentDto,
   ) {
     const data = await this.commentService.createComment(createCommentDto);
+    if (data.comment === null) {
+      this.server.emit(event_onNewComment, {
+        ACTION: 'POST_DELETED',
+        PAYLOAD: data.comment,
+      });
+    }
     this.server.emit(event_onNewComment, {
       ACTION: action_newComment,
       PAYLOAD: data.comment,

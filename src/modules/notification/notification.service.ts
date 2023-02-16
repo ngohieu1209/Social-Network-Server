@@ -42,8 +42,9 @@ export class NotificationService {
         id: user.id,
         firstName: user.firstName,
         lastName: user.lastName,
-        avatar: user.avatar['url'] || null,
+        avatar: user.avatar['url'] ? { url: user.avatar['url'] } : null,
       },
+      seen: notification.seen,
       recipient: notification.recipient,
       action: notification.action,
       postId: notification.postId,
@@ -55,7 +56,7 @@ export class NotificationService {
   async seenNotification(id: string) {
     const notification = await this.notificationRepository.findOne(id);
     if (!notification) {
-      throw new Error('Notification not found');
+      return null;
     }
     notification.seen = 1;
     await this.notificationRepository.save(notification);
