@@ -12,6 +12,7 @@ import { FriendModule } from './modules/friend/friend.module';
 import { LikeModule } from './modules/like/like.module';
 import { WebsocketModule } from './modules/websocket/websocket.module';
 import { CommentModule } from './modules/comment/comment.module';
+import { NotificationModule } from './modules/notification/notification.module';
 
 @Module({
   imports: [
@@ -31,6 +32,7 @@ import { CommentModule } from './modules/comment/comment.module';
     LikeModule,
     WebsocketModule,
     CommentModule,
+    NotificationModule,
   ],
 })
 export class AppModule {}

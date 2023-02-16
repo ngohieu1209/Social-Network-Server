@@ -1,4 +1,5 @@
 export enum ActionStatus {
-  LIKE = 'like',
-  COMMENT = 'comment',
+  LIKE = 'liked',
+  COMMENT = 'commented',
+  MESSAGE = 'message',
 }

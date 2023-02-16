@@ -39,4 +39,29 @@ export class UserRepository extends Repository<UsersEntity> {
     if (user) return user;
     else return null;
   }
+
+  async findUsersByName(currentUserId: string, name: string) {
+    const users = await this.createQueryBuilder('user')
+      .where('user.id != :id', { id: currentUserId })
+      .andWhere(
+        'CONCAT(LOWER(user.firstName), " ", LOWER(user.lastName)) LIKE :keyword',
+        { keyword: `%${name.toLowerCase()}%` },
+      )
+      .leftJoinAndMapOne(
+        'user.avatar',
+        'upload',
+        'avatar',
+        'user.avatar = avatar.id',
+      )
+      .select([
+        'user.id',
+        'user.firstName',
+        'user.lastName',
+        'user.followers',
+        'avatar.url',
+      ])
+      .getManyAndCount();
+    if (users) return users[0];
+    else return null;
+  }
 }

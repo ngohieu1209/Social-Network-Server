@@ -34,7 +34,7 @@ export class createTableNotification1676392863358
           {
             name: 'action',
             type: 'enum',
-            enum: ['like', 'comment'],
+            enum: ['liked', 'commented', 'message'],
             isNullable: false,
           },
           {
