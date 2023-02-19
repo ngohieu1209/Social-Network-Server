@@ -16,12 +16,10 @@ export class SocialLinkService {
     userId: string,
     createSocialLinks: CreateSocialLinksDto,
   ) {
-    const socialLink = new SocialLinksEntity();
-    socialLink.linkFacebook = createSocialLinks.linkFacebook;
-    socialLink.linkInstagram = createSocialLinks.linkInstagram;
-    socialLink.linkGithub = createSocialLinks.linkGithub;
-    socialLink.userId = userId;
-    await this.socialLinksRepository.save(socialLink);
+    await this.socialLinksRepository.save({
+      ...createSocialLinks,
+      userId,
+    });
   }
 
   async getSocialLinks(userId: string): Promise<SocialLinksEntity> {
