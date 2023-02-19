@@ -1,6 +1,5 @@
 import { NotificationService } from './../notification/notification.service';
 import { EditCommentDto } from './dto/edit-comment.dto';
-import { CommentEntity } from './../../models/entities/comment.entity';
 import { CommentRepository, PostRepository } from './../../models/repositories';
 import { Injectable } from '@nestjs/common';
 import { CreateCommentDto } from './dto/create-comment.dto';
@@ -26,21 +25,21 @@ export class CommentService {
     let notification = null;
     const post = await this.postRepository.findOne(postId);
     if (!post) {
-      return { comment: null, notification: null };
+      throw new Error('Post Has Been Removed');
     }
     const user = await this.usersService.findUserById(userId);
     if (!user) {
-      return { comment: null, notification: null };
+      throw new Error('User Not Found');
     }
     if (content === undefined || (content === '' && content.length < 1)) {
       throw new Error('Comment text is required');
     }
 
-    const comment = new CommentEntity();
-    comment.content = content;
-    comment.postId = postId;
-    comment.userId = userId;
-    await this.commentRepository.save(comment);
+    const newComment = await this.commentRepository.save({
+      content,
+      postId,
+      userId,
+    });
     post.commentsCount++;
     await this.postRepository.save(post);
     if (post.userId !== userId) {
@@ -53,17 +52,17 @@ export class CommentService {
     }
     return {
       comment: {
-        id: comment.id,
+        id: newComment.id,
         userId: {
           id: user.id,
           firstName: user.firstName,
           lastName: user.lastName,
           avatar: user.avatar['url'] || null,
         },
-        postId: comment.postId,
-        content: comment.content,
-        createdAt: comment.createdAt,
-        updatedAt: comment.updatedAt,
+        postId: newComment.postId,
+        content: newComment.content,
+        createdAt: newComment.createdAt,
+        updatedAt: newComment.updatedAt,
       },
       notification,
     };
@@ -74,7 +73,7 @@ export class CommentService {
       where: { id: postId },
     });
     if (!post) {
-      throw new Error('Post not found');
+      throw new Error('Post Has Been Removed');
     }
     const comments = await this.commentRepository.getCommentsByPostId(
       postId,
@@ -89,7 +88,7 @@ export class CommentService {
       { content: editCommentDto.content },
     );
     if (!comment.affected) {
-      throw new Error('Comment not found');
+      throw new Error('Comment Not Found');
     }
     return editCommentDto;
   }
@@ -105,7 +104,7 @@ export class CommentService {
       { commentsCount: () => 'commentsCount - 1' },
     );
     if (!comment.affected) {
-      throw new Error('Comment not found');
+      throw new Error('Comment Not Found');
     }
     return deleteCommentDto;
   }

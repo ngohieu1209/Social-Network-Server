@@ -141,20 +141,18 @@ export class PostService {
     currentUserId: string,
     page: number,
   ): Promise<ResponsePostsDto<PostEntity[]>> {
-    try {
-      if (userId === currentUserId) {
-        return await this.getPostsByCurrentUser(currentUserId, page);
-      }
-      const friendStatus = await this.friendsRepository.getStatusFriend(
-        currentUserId,
-        userId,
-      );
-      const posts = await this.postRepository.getByUserId(
-        userId,
-        friendStatus,
-        page,
-      );
-      return posts;
-    } catch (error) {}
+    if (userId === currentUserId) {
+      return await this.getPostsByCurrentUser(currentUserId, page);
+    }
+    const friendStatus = await this.friendsRepository.getStatusFriend(
+      currentUserId,
+      userId,
+    );
+    const posts = await this.postRepository.getByUserId(
+      userId,
+      friendStatus,
+      page,
+    );
+    return posts;
   }
 }

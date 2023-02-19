@@ -38,7 +38,7 @@ export class AuthController {
   async signIn(
     @Body() signInDto: SignInDto,
     @Res() res: Response,
-  ): Promise<{ msg: string }> {
+  ): Promise<Response> {
     const { refreshToken } = await this.authService.signIn(signInDto);
     res.cookie('refreshToken', refreshToken, {
       httpOnly: false,
@@ -46,7 +46,7 @@ export class AuthController {
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     });
 
-    return { msg: 'Login Success!' };
+    return res.json({ msg: 'Login success!' });
   }
 
   @Post('/refreshToken')
@@ -79,6 +79,6 @@ export class AuthController {
     res.clearCookie('refreshToken', {
       path: '/api/v1/auth/refreshToken',
     });
-    return { msg: 'Logout success!' };
+    return res.json({ msg: 'Logout success!' });
   }
 }

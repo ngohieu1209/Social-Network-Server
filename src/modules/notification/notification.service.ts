@@ -24,11 +24,11 @@ export class NotificationService {
     const { recipient, sender, action, postId } = createNotificationDto;
     const post = await this.postRepository.findOne(postId);
     if (!post) {
-      throw new Error('Post not found');
+      throw new Error('Post Has Been Removed');
     }
     const user = await this.usersService.findUserById(sender);
     if (!user) {
-      throw new Error('User not found');
+      throw new Error('User Not Found');
     }
     const notification = new NotificationEntity();
     notification.recipient = recipient;
@@ -56,7 +56,7 @@ export class NotificationService {
   async seenNotification(id: string) {
     const notification = await this.notificationRepository.findOne(id);
     if (!notification) {
-      return null;
+      throw new Error('Notification Not Found');
     }
     notification.seen = 1;
     await this.notificationRepository.save(notification);
@@ -69,7 +69,7 @@ export class NotificationService {
   async deleteNotification(id: string) {
     const notification = await this.notificationRepository.findOne(id);
     if (!notification) {
-      throw new Error('Notification not found');
+      throw new Error('Notification Not Found');
     }
     await this.notificationRepository.delete(id);
     return {

@@ -1,3 +1,4 @@
+import { action_commentNotFound } from './../comment/utils/comment.constants';
 import {
   event_onNewComment,
   event_onEditComment,
@@ -5,15 +6,20 @@ import {
   action_editComment,
   event_onDeleteComment,
   action_deleteComment,
-} from './../comment/utils/constants';
+  event_postNotFound,
+  action_postNotFound,
+  event_commentNotFound,
+} from '../comment/utils/comment.constants';
 import {
   action_deleteNotification,
   action_newNotification,
+  action_notificationNotFound,
   action_seenNotification,
+  event_notificationNotFound,
   event_onDeleteNotification,
   event_onNewNotification,
   event_onSeenNotification,
-} from './../notification/utils/constants';
+} from '../notification/utils/notification.constants';
 import { Logger, UnauthorizedException, UseGuards } from '@nestjs/common';
 import {
   ConnectedSocket,
@@ -82,21 +88,22 @@ export class WebsocketGateway
     @ConnectedSocket() socket: Socket,
     @MessageBody() createCommentDto: CreateCommentDto,
   ) {
-    const data = await this.commentService.createComment(createCommentDto);
-    if (data.comment === null) {
+    try {
+      const data = await this.commentService.createComment(createCommentDto);
       this.server.emit(event_onNewComment, {
-        ACTION: 'POST_DELETED',
+        ACTION: action_newComment,
         PAYLOAD: data.comment,
       });
+      this.server.emit(event_onNewNotification, {
+        ACTION: action_newNotification,
+        PAYLOAD: data.notification,
+      });
+    } catch (error) {
+      socket.emit(event_postNotFound, {
+        ACTION: action_postNotFound,
+        PAYLOAD: error.message,
+      });
     }
-    this.server.emit(event_onNewComment, {
-      ACTION: action_newComment,
-      PAYLOAD: data.comment,
-    });
-    this.server.emit(event_onNewNotification, {
-      ACTION: action_newNotification,
-      PAYLOAD: data.notification,
-    });
   }
 
   @SubscribeMessage('Comment:EditComment')
@@ -104,11 +111,18 @@ export class WebsocketGateway
     @ConnectedSocket() socket: Socket,
     @MessageBody() editCommentDto: EditCommentDto,
   ) {
-    const data = await this.commentService.editComment(editCommentDto);
-    this.server.emit(event_onEditComment, {
-      ACTION: action_editComment,
-      PAYLOAD: data,
-    });
+    try {
+      const data = await this.commentService.editComment(editCommentDto);
+      this.server.emit(event_onEditComment, {
+        ACTION: action_editComment,
+        PAYLOAD: data,
+      });
+    } catch (error) {
+      socket.emit(event_commentNotFound, {
+        ACTION: action_commentNotFound,
+        PAYLOAD: error.message,
+      });
+    }
   }
 
   @SubscribeMessage('Comment:DeleteComment')
@@ -116,11 +130,18 @@ export class WebsocketGateway
     @ConnectedSocket() socket: Socket,
     @MessageBody() deleteCommentDto: DeleteCommentDto,
   ) {
-    const data = await this.commentService.deleteComment(deleteCommentDto);
-    this.server.emit(event_onDeleteComment, {
-      ACTION: action_deleteComment,
-      PAYLOAD: data,
-    });
+    try {
+      const data = await this.commentService.deleteComment(deleteCommentDto);
+      this.server.emit(event_onDeleteComment, {
+        ACTION: action_deleteComment,
+        PAYLOAD: data,
+      });
+    } catch (error) {
+      socket.emit(event_commentNotFound, {
+        ACTION: action_commentNotFound,
+        PAYLOAD: error.message,
+      });
+    }
   }
 
   @SubscribeMessage('Notification:SeenNotification')
@@ -128,11 +149,18 @@ export class WebsocketGateway
     @ConnectedSocket() socket: Socket,
     @MessageBody() id: string,
   ) {
-    const data = await this.notificationService.seenNotification(id);
-    this.server.emit(event_onSeenNotification, {
-      ACTION: action_seenNotification,
-      PAYLOAD: data,
-    });
+    try {
+      const data = await this.notificationService.seenNotification(id);
+      this.server.emit(event_onSeenNotification, {
+        ACTION: action_seenNotification,
+        PAYLOAD: data,
+      });
+    } catch (error) {
+      socket.emit(event_notificationNotFound, {
+        ACTION: action_notificationNotFound,
+        PAYLOAD: error.message,
+      });
+    }
   }
 
   @SubscribeMessage('Notification:DeleteNotification')
@@ -140,10 +168,17 @@ export class WebsocketGateway
     @ConnectedSocket() socket: Socket,
     @MessageBody() id: string,
   ) {
-    const data = await this.notificationService.deleteNotification(id);
-    this.server.emit(event_onDeleteNotification, {
-      ACTION: action_deleteNotification,
-      PAYLOAD: data,
-    });
+    try {
+      const data = await this.notificationService.deleteNotification(id);
+      this.server.emit(event_onDeleteNotification, {
+        ACTION: action_deleteNotification,
+        PAYLOAD: data,
+      });
+    } catch (error) {
+      socket.emit(event_notificationNotFound, {
+        ACTION: action_notificationNotFound,
+        PAYLOAD: error.message,
+      });
+    }
   }
 }

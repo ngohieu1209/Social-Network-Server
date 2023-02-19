@@ -1,5 +1,6 @@
+import { httpErrors } from './../../shares/exceptions/index';
 import { FriendsRepository, UserRepository } from './../../models/repositories';
-import { Injectable } from '@nestjs/common';
+import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()
@@ -23,13 +24,15 @@ export class FriendService {
         user_send_request: currentUserId,
         user_receive_request: userId,
       });
-      const userReceive = await this.userRepository.findOne(userId);
-      userReceive.followers += 1;
-      await this.userRepository.save(userReceive);
+      await this.userRepository.update(
+        { id: userId },
+        { followers: () => 'followers + 1' },
+      );
 
-      const userSend = await this.userRepository.findOne(currentUserId);
-      userSend.following += 1;
-      await this.userRepository.save(userSend);
+      await this.userRepository.update(
+        { id: currentUserId },
+        { following: () => 'following + 1' },
+      );
       return { msg: 'Send a friend request success' };
     }
     return { msg: 'You have sent a friend request' };
@@ -47,13 +50,15 @@ export class FriendService {
       status: 'friend',
     });
 
-    const currentUser = await this.userRepository.findOne(currentUserId);
-    currentUser.following += 1;
-    await this.userRepository.save(currentUser);
+    await this.userRepository.update(
+      { id: currentUserId },
+      { following: () => 'following + 1' },
+    );
 
-    const user = await this.userRepository.findOne(userId);
-    user.followers += 1;
-    await this.userRepository.save(user);
+    await this.userRepository.update(
+      { id: userId },
+      { followers: () => 'followers + 1' },
+    );
 
     return { msg: 'Have become friends' };
   }
@@ -82,6 +87,13 @@ export class FriendService {
     await this.friendsRepository.delete(friend.id);
     const currentUser = await this.userRepository.findOne(currentUserId);
     const user = await this.userRepository.findOne(userId);
+
+    if (!currentUser || !user) {
+      throw new HttpException(
+        httpErrors.ACCOUNT_NOT_FOUND,
+        HttpStatus.BAD_REQUEST,
+      );
+    }
 
     if (friend.status === 'friend') {
       await this.userRepository.save({
