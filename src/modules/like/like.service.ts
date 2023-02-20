@@ -1,6 +1,7 @@
 import { LikeRepository, PostRepository } from './../../models/repositories';
-import { Injectable } from '@nestjs/common';
+import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { httpErrors } from 'src/shares/exceptions';
 
 @Injectable()
 export class LikeService {
@@ -12,6 +13,12 @@ export class LikeService {
     private readonly postRepository: PostRepository,
   ) {}
   async likePost(userId: string, postId: string) {
+    const post = await this.postRepository.findOne({ id: postId });
+    if (!post)
+      throw new HttpException(
+        httpErrors.POST_NOT_FOUND,
+        HttpStatus.BAD_REQUEST,
+      );
     const like = await this.likeRepository.findOne({ userId, postId });
     if (like) {
       await this.likeRepository.delete({ userId, postId });

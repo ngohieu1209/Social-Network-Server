@@ -13,6 +13,8 @@ import { LikeModule } from './modules/like/like.module';
 import { WebsocketModule } from './modules/websocket/websocket.module';
 import { CommentModule } from './modules/comment/comment.module';
 import { NotificationModule } from './modules/notification/notification.module';
+import { MailModule } from './modules/mail/mail.module';
+import { BullModule } from '@nestjs/bull';
 
 @Module({
   imports: [
@@ -21,6 +23,12 @@ import { NotificationModule } from './modules/notification/notification.module';
       ...config,
       entities: [__dirname + '/../models/entities/**/*{.ts, .js}'],
       autoLoadEntities: true,
+    }),
+    BullModule.forRoot({
+      redis: {
+        host: process.env.REDIS_HOST,
+        port: parseInt(process.env.REDIS_PORT),
+      },
     }),
     DatabaseCommonModule,
     AuthModule,
@@ -33,6 +41,7 @@ import { NotificationModule } from './modules/notification/notification.module';
     WebsocketModule,
     CommentModule,
     NotificationModule,
+    MailModule,
   ],
 })
 export class AppModule {}
