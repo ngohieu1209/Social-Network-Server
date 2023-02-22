@@ -57,7 +57,7 @@ export class CommentService {
           id: user.id,
           firstName: user.firstName,
           lastName: user.lastName,
-          avatar: user.avatar['url'] || null,
+          avatar: user.avatar ? user.avatar['url'] : null,
         },
         postId: newComment.postId,
         content: newComment.content,

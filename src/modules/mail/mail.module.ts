@@ -3,7 +3,6 @@ import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handleba
 import { BullModule } from '@nestjs/bull';
 import { Module } from '@nestjs/common';
 import { join } from 'path';
-import { MailController } from './mail.controller';
 import { MailProcessor } from './mail.processor';
 import { MailService } from './mail.service';
 
@@ -41,7 +40,6 @@ import { MailService } from './mail.service';
       }),
     }),
   ],
-  controllers: [MailController],
   providers: [MailService, MailProcessor],
   exports: [MailService],
 })

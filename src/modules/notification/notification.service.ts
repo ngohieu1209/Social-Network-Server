@@ -42,7 +42,7 @@ export class NotificationService {
         id: user.id,
         firstName: user.firstName,
         lastName: user.lastName,
-        avatar: user.avatar['url'] ? { url: user.avatar['url'] } : null,
+        avatar: user.avatar ? { url: user.avatar['url'] } : null,
       },
       seen: notification.seen,
       recipient: notification.recipient,
